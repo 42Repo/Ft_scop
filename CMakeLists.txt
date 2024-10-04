@@ -4,15 +4,45 @@ cmake_minimum_required(VERSION 3.10)
 # Nom du projet
 project(Scop)
 
+message ("${CMAKE_BUILD_TYPE}")
+
 # Définir le standard C++
 set(CMAKE_CXX_STANDARD 20)
+set(CMAKE_CXX_FLAGS "")
 set(CMAKE_CXX_STANDARD_REQUIRED True)
+# cmake_policy(SET CMP0072 NEW)
+
+if(NOT CMAKE_BUILD_TYPE)
+    set(CMAKE_BUILD_TYPE "Release" CACHE STRING "Build type (default: Release)" FORCE)
+endif()
+
+if(CMAKE_BUILD_TYPE STREQUAL "Debug")
+    set(CMAKE_CXX_FLAGS_DEBUG "-Wall -Werror -Wextra -gdwarf-4 -Wunused -Wconversion -Wfloat-equal -Wnon-virtual-dtor \
+        -Wpointer-arith -Wstrict-aliasing=2 -Wunreachable-code -Wnull-dereference \
+        -Wnonnull -Wpedantic -Wcast-align -Wcast-qual -Wctor-dtor-privacy \
+        -Wdisabled-optimization -Wformat=2 -Winit-self -Wmissing-declarations \
+        -Wmissing-include-dirs -Wold-style-cast -Woverloaded-virtual \
+        -Wredundant-decls -Wshadow -Wsign-conversion -Wsign-promo \
+        -Wstrict-overflow=5 -Wswitch-default -Wundef")
+    
+    # Si Clang est détecté
+    if(CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
+        set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -Weverything -Wno-suggest-destructor-override -Wno-suggest-override")
+    else()
+        set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -Wlogical-op -Wstrict-null-sentinel")
+    endif()
+endif()
 
 # Ajouter les répertoires include/ pour les headers
 include_directories(include)
 
+set(SRCS
+	src/main.cpp
+	src/glad.c
+)
+
 # Ajouter les fichiers sources
-add_executable(Scop src/main.cpp src/glad.c)
+add_executable(Scop ${SRCS})
 
 # Lier les bibliothèques nécessaires pour OpenGL et GLFW
 find_package(OpenGL REQUIRED)
