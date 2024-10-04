@@ -1,16 +1,13 @@
-# CMakeLists.txt
 cmake_minimum_required(VERSION 3.10)
 
-# Nom du projet
 project(Scop)
 
 message ("${CMAKE_BUILD_TYPE}")
 
-# Définir le standard C++
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_FLAGS "")
 set(CMAKE_CXX_STANDARD_REQUIRED True)
-# cmake_policy(SET CMP0072 NEW)
+cmake_policy(SET CMP0072 NEW)
 
 if(NOT CMAKE_BUILD_TYPE)
     set(CMAKE_BUILD_TYPE "Release" CACHE STRING "Build type (default: Release)" FORCE)
@@ -25,7 +22,6 @@ if(CMAKE_BUILD_TYPE STREQUAL "Debug")
         -Wredundant-decls -Wshadow -Wsign-conversion -Wsign-promo \
         -Wstrict-overflow=5 -Wswitch-default -Wundef")
     
-    # Si Clang est détecté
     if(CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
         set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -Weverything -Wno-suggest-destructor-override -Wno-suggest-override")
     else()
@@ -33,7 +29,6 @@ if(CMAKE_BUILD_TYPE STREQUAL "Debug")
     endif()
 endif()
 
-# Ajouter les répertoires include/ pour les headers
 include_directories(include)
 
 set(SRCS
@@ -41,10 +36,8 @@ set(SRCS
 	src/glad.c
 )
 
-# Ajouter les fichiers sources
 add_executable(Scop ${SRCS})
 
-# Lier les bibliothèques nécessaires pour OpenGL et GLFW
 find_package(OpenGL REQUIRED)
 find_package(PkgConfig REQUIRED)
 pkg_search_module(GLFW REQUIRED glfw3)
