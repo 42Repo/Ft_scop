@@ -4,8 +4,8 @@
 1. **Clone the Repo**
 
 ```bash
-git clone https://github.com/votre-utilisateur/projet-xyz.git
-cd projet-xyz
+git clone https://github.com/42Repo/Ft_scop
+cd Ft_scop
 ```
 2.  **Building The Project**
 ```bash
