@@ -9,6 +9,8 @@ set(CMAKE_CXX_FLAGS "")
 set(CMAKE_CXX_STANDARD_REQUIRED True)
 cmake_policy(SET CMP0072 NEW)
 
+file(COPY ${CMAKE_SOURCE_DIR}/shaders DESTINATION ${CMAKE_BINARY_DIR})
+
 if(NOT CMAKE_BUILD_TYPE)
     set(CMAKE_BUILD_TYPE "Release" CACHE STRING "Build type (default: Release)" FORCE)
 endif()
@@ -32,7 +34,7 @@ endif()
 include_directories(include)
 
 set(SRCS
-	src/main.cpp
+	main.cpp
 	src/glad.c
 )
 
