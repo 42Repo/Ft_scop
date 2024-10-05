@@ -36,6 +36,7 @@ include_directories(include)
 set(SRCS
 	main.cpp
 	src/glad.c
+	src/shaders.cpp
 )
 
 add_executable(Scop ${SRCS})
