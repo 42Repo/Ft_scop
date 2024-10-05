@@ -112,6 +112,10 @@ void createBuffers(unsigned int &VAO, unsigned int &VBO, unsigned int &EBO) {
 
     glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void *)0);
     glEnableVertexAttribArray(0);
+
+    // Wireframe mode
+    glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+
 }
 
 // Main render loop
@@ -166,13 +170,13 @@ int main() {
     unsigned int VAO, VBO, EBO;
     createBuffers(VAO, VBO, EBO);
 
-    // Wireframe mode
-    glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
-
     // Render loop
     renderLoop(window, shaderProgram, VAO, EBO);
 
     // Cleanup
+    glDeleteVertexArrays(1, &VAO);
+    glDeleteBuffers(1, &VBO);
+    glDeleteBuffers(1, &EBO);
     glfwTerminate();
     return 0;
 }
