@@ -1,6 +1,4 @@
 #include "include/includes.hpp"
-#include <fstream>
-#include <sstream>
 
 void         framebuffer_size_callback(GLFWwindow *window, int width, int height);
 void         processInput(GLFWwindow *window);
@@ -126,7 +124,7 @@ void createBuffers(unsigned int &VAO, unsigned int &VBO, unsigned int &EBO) {
     glEnableVertexAttribArray(0);
 
     // Wireframe mode
-    glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+    // glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 }
 
 // Main render loop
@@ -140,7 +138,13 @@ void renderLoop(GLFWwindow *window, unsigned int shaderProgram, unsigned int VAO
         glClear(GL_COLOR_BUFFER_BIT);
 
         // Use shader program and draw
+        float timeValue = static_cast<float>(glfwGetTime());
+        float greenValue = (std::sinf(timeValue) / 2.0f) + 0.5f;
+        std::cout << "greenValue: " << greenValue << std::endl;
+        int vertexColorLocation = glGetUniformLocation(shaderProgram, "vertexColor");
         glUseProgram(shaderProgram);
+        glUniform4f(vertexColorLocation, 0.0f, greenValue, 0.0f, 1.0f);
+
         glBindVertexArray(VAO);
         glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
         // glDrawArrays(GL_TRIANGLES, 0, 3);
