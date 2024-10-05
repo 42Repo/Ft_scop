@@ -40,15 +40,14 @@ bool initGLAD() {
 // Create VAO, VBO and EBO for the triangle vertices
 void createBuffers(unsigned int &VAO, unsigned int &VBO, unsigned int &EBO) {
     float vertices[] = {
-        // positions         // colors
-        0.5f,  -0.5f, 0.0f, 1.0f, 0.0f, 0.0f, // bottom right
-        -0.5f, -0.5f, 0.0f, 0.0f, 1.0f, 0.0f, // bottom left
-        0.0f,  0.5f,  0.0f, 0.0f, 0.0f, 1.0f  // top
+        // positions          // colors           // texture coords
+        0.5f,  0.5f,  0.0f, 1.0f, 0.0f, 0.0f, 1.0f, 1.0f, // top right
+        0.5f,  -0.5f, 0.0f, 0.0f, 1.0f, 0.0f, 1.0f, 0.0f, // bottom right
+        -0.5f, -0.5f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f, // bottom left
+        -0.5f, 0.5f,  0.0f, 1.0f, 1.0f, 0.0f, 0.0f, 1.0f  // top left
     };
 
-    unsigned int indices[] = {
-        0, 1, 2, // 1st triangle
-    };
+    unsigned int indices[] = {0, 1, 2, 0, 2, 3};
 
     glGenVertexArrays(1, &VAO);
     glGenBuffers(1, &VBO);
@@ -60,20 +59,25 @@ void createBuffers(unsigned int &VAO, unsigned int &VBO, unsigned int &EBO) {
     glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
     glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
 
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float),
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float),
                           reinterpret_cast<void *>(static_cast<uintptr_t>(0)));
     glEnableVertexAttribArray(0);
 
-    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float),
+    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float),
                           reinterpret_cast<void *>(static_cast<uintptr_t>(3 * sizeof(float))));
     glEnableVertexAttribArray(1);
+
+    glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 8 * sizeof(float),
+                          reinterpret_cast<void *>(static_cast<uintptr_t>(6 * sizeof(float))));
+    glEnableVertexAttribArray(2);
 
     // Wireframe mode
     // glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 }
 
 // Main render loop
-void renderLoop(GLFWwindow *window, class Shader &shader, unsigned int VAO, unsigned int EBO) {
+void renderLoop(GLFWwindow *window, class Shader &shader, unsigned int VAO, unsigned int EBO,
+                unsigned int texture) {
     while (!glfwWindowShouldClose(window)) {
         processInput(window);
 
@@ -86,9 +90,9 @@ void renderLoop(GLFWwindow *window, class Shader &shader, unsigned int VAO, unsi
 
         glBindVertexArray(VAO);
         glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
-        // glDrawArrays(GL_TRIANGLES, 0, 3);
-        // glDrawArrays(GL_TRIANGLES, 2, 3);
-        glDrawElements(GL_TRIANGLES, 3, GL_UNSIGNED_INT,
+        glBindTexture(GL_TEXTURE_2D, texture);
+
+        glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT,
                        reinterpret_cast<void *>(static_cast<uintptr_t>(0)));
 
         // Swap buffers and poll events
@@ -119,8 +123,31 @@ int main() {
         unsigned int VAO, VBO, EBO;
         createBuffers(VAO, VBO, EBO);
 
+        // Texture wrapping and filtering
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+        float borderColor[] = {1.0f, 1.0f, 0.0f, 1.0f};
+        glTexParameterfv(GL_TEXTURE_2D, GL_TEXTURE_BORDER_COLOR, borderColor);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+        // glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+
+        // Load and create a texture
+        int width, height, nrChannels;
+        stbi_set_flip_vertically_on_load(true);
+        unsigned char *data = stbi_load("images/Untitled.png", &width, &height, &nrChannels, 0);
+        if (!data) {
+            std::cout << "Failed to load texture" << std::endl;
+            return -1;
+        }
+        unsigned int texture;
+        glGenTextures(1, &texture);
+        glBindTexture(GL_TEXTURE_2D, texture);
+        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, data);
+        glGenerateMipmap(GL_TEXTURE_2D);
+        stbi_image_free(data);
+
         // Render loop
-        renderLoop(window, shader, VAO, EBO);
+        renderLoop(window, shader, VAO, EBO, texture);
 
         // Cleanup
         glDeleteVertexArrays(1, &VAO);

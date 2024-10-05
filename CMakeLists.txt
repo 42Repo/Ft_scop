@@ -5,11 +5,11 @@ project(Scop)
 message ("${CMAKE_BUILD_TYPE}")
 
 set(CMAKE_CXX_STANDARD 20)
-set(CMAKE_CXX_FLAGS "")
 set(CMAKE_CXX_STANDARD_REQUIRED True)
 cmake_policy(SET CMP0072 NEW)
 
 file(COPY ${CMAKE_SOURCE_DIR}/shaders DESTINATION ${CMAKE_BINARY_DIR})
+file(COPY ${CMAKE_SOURCE_DIR}/images DESTINATION ${CMAKE_BINARY_DIR})
 
 if(NOT CMAKE_BUILD_TYPE)
     set(CMAKE_BUILD_TYPE "Release" CACHE STRING "Build type (default: Release)" FORCE)
@@ -34,12 +34,15 @@ endif()
 include_directories(include)
 
 set(SRCS
-	main.cpp
-	src/glad.c
-	src/shaders.cpp
+    main.cpp
+    src/glad.c
+    src/shaders.cpp
+    include/add_images_lib.cpp
 )
 
 add_executable(Scop ${SRCS})
+
+set_source_files_properties(include/add_images_lib.cpp PROPERTIES COMPILE_FLAGS "-Wno-error -Wno-all -Wno-cast-qual -Wno-old-style-cast -Wno-sign-conversion -Wno-conversion -Wno-switch-default -Wno-strict-overflow -Wno-everything")
 
 find_package(OpenGL REQUIRED)
 find_package(PkgConfig REQUIRED)
