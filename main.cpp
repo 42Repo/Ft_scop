@@ -2,7 +2,18 @@
 #include <fstream>
 #include <sstream>
 
+void         framebuffer_size_callback(GLFWwindow *window, int width, int height);
+void         processInput(GLFWwindow *window);
+std::string  loadShaderSource(const std::string &filename);
+GLFWwindow  *initGLFW();
+bool         initGLAD();
+unsigned int compileShader(unsigned int shaderType, const std::string &filePath);
+unsigned int linkShaderProgram(unsigned int vertexShader, unsigned int fragmentShader);
+void         createBuffers(unsigned int &VAO, unsigned int &VBO, unsigned int &EBO);
+void renderLoop(GLFWwindow *window, unsigned int shaderProgram, unsigned int VAO, unsigned int EBO);
+
 void framebuffer_size_callback(GLFWwindow *window, int width, int height) {
+    (void)window;
     glViewport(0, 0, width, height);
 }
 
@@ -40,7 +51,7 @@ GLFWwindow *initGLFW() {
 
 // Initialize GLAD
 bool initGLAD() {
-    if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress)) {
+    if (!gladLoadGLLoader(reinterpret_cast<GLADloadproc>(glfwGetProcAddress))) {
         std::cout << "Failed to initialize GLAD" << std::endl;
         return false;
     }
@@ -88,11 +99,11 @@ unsigned int linkShaderProgram(unsigned int vertexShader, unsigned int fragmentS
 void createBuffers(unsigned int &VAO, unsigned int &VBO, unsigned int &EBO) {
     // float vertices[] = {-0.5f, -0.5f, 0.0f, 0.5f, -0.5f, 0.0f, 0.0f, 0.5f, 0.0f};
     float vertices[] = {
-        -1.f,  0.f,  0.0f, // 1st triangle : left 
-        -0.5f, 1.f, 0.0f, // 1st triangle : top
-        0.f,  -0.f, 0.0f, // 1st triangle : middle
-        1.f, 0.f,  0.0f,  // 2st triangle : right
-        0.5f, 1.f, 0.0f, // 2st triangle : top
+        -1.f,  0.f,  0.0f, // 1st triangle : left
+        -0.5f, 1.f,  0.0f, // 1st triangle : top
+        0.f,   -0.f, 0.0f, // 1st triangle : middle
+        1.f,   0.f,  0.0f, // 2st triangle : right
+        0.5f,  1.f,  0.0f, // 2st triangle : top
 
     };
     unsigned int indices[] = {
@@ -110,16 +121,17 @@ void createBuffers(unsigned int &VAO, unsigned int &VBO, unsigned int &EBO) {
     glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
     glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
 
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void *)0);
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float),
+                          reinterpret_cast<void *>(static_cast<uintptr_t>(0)));
     glEnableVertexAttribArray(0);
 
     // Wireframe mode
     glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
-
 }
 
 // Main render loop
-void renderLoop(GLFWwindow *window, unsigned int shaderProgram, unsigned int VAO, unsigned int EBO) {
+void renderLoop(GLFWwindow *window, unsigned int shaderProgram, unsigned int VAO,
+                unsigned int EBO) {
     while (!glfwWindowShouldClose(window)) {
         processInput(window);
 
@@ -131,9 +143,10 @@ void renderLoop(GLFWwindow *window, unsigned int shaderProgram, unsigned int VAO
         glUseProgram(shaderProgram);
         glBindVertexArray(VAO);
         glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
-        glDrawArrays(GL_TRIANGLES, 0, 3);
-        glDrawArrays(GL_TRIANGLES, 2, 3);
-        // glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+        // glDrawArrays(GL_TRIANGLES, 0, 3);
+        // glDrawArrays(GL_TRIANGLES, 2, 3);
+        glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT,
+                       reinterpret_cast<void *>(static_cast<uintptr_t>(0)));
 
         // Swap buffers and poll events
         glfwSwapBuffers(window);
