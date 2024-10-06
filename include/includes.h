@@ -1,5 +1,6 @@
 #pragma once
 
+#include "Camera.h"
 #include "glad/glad.h"
 #include "stb_image.h"
 #include <GLFW/glfw3.h>
@@ -13,10 +14,11 @@
 #include <vector>
 
 void        framebuffer_size_callback(GLFWwindow *window, int width, int height);
-void        processInput(GLFWwindow *window, glm::mat4 &view);
 GLFWwindow *initGLFW();
 bool        initGLAD();
 void        createBuffers(unsigned int &VAO, unsigned int &VBO, unsigned int &EBO);
-void        renderLoop(GLFWwindow *window, class Shader &shader, unsigned int VAO, unsigned int EBO,
-                       unsigned int texture1, unsigned int texture2);
 void        mouse_callback(GLFWwindow *window, double xpos, double ypos);
+void        processInput(GLFWwindow *window);
+void        scroll_callback(GLFWwindow *window, double xoffset, double yoffset);
+void        renderLoop(GLFWwindow *window, class Shader &shader, unsigned int VAO, unsigned int EBO,
+                       Camera &camera);

@@ -25,7 +25,7 @@ if(CMAKE_BUILD_TYPE STREQUAL "Debug")
         -Wstrict-overflow=5 -Wswitch-default -Wundef")
     
     if(CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
-        set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -Weverything -Wno-reserved-macro-identifier -Wno-reserved-identifier -Wno-c++98-compat -Wno-cast-function-type-strict")
+        set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -Weverything -Wno-reserved-macro-identifier -Wno-reserved-identifier -Wno-c++98-compat -Wno-cast-function-type-strict -Wno-padded")
     else()
         set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -Wlogical-op -Wstrict-null-sentinel")
     endif()
@@ -36,7 +36,8 @@ include_directories(include)
 set(SRCS
     main.cpp
     src/glad.c
-    src/shaders.cpp
+    src/Shader.cpp
+    src/Camera.cpp
     include/add_images_lib.cpp
 )
 

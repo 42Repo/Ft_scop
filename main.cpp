@@ -1,93 +1,89 @@
+#include "include/Camera.h"
+#include "include/Shader.h"
 #include "include/includes.h"
-#include "include/shaders.h"
+#include <glm/gtc/matrix_transform.hpp>
+
+// Settings
+const unsigned int SCR_WIDTH = 800;
+const unsigned int SCR_HEIGHT = 600;
+
+// Camera
+static float lastX = SCR_WIDTH / 2.0f;
+static float lastY = SCR_HEIGHT / 2.0f;
+static bool  firstMouse = true;
+
+// Timing
+static float deltaTime = 0.0f;
+static float lastFrame = 0.0f;
+
+// Texture toggle
+// static bool textureEnabled = false;
+// static bool transitioning = false;
 
 void framebuffer_size_callback(GLFWwindow *window, int width, int height) {
     (void)window;
     glViewport(0, 0, width, height);
+    Camera &camera = *static_cast<Camera *>(glfwGetWindowUserPointer(window));
+    camera.setAspectRatio(static_cast<float>(width) / static_cast<float>(height));
 }
 
-static glm::vec3 cameraPos = glm::vec3(0.0f, 0.0f, -3.0f);
-static glm::vec3 cameraFront = glm::vec3(0.0f, 0.0f, -1.0f);
-static glm::vec3 cameraUp = glm::vec3(0.0f, 1.0f, 0.0f);
-static float     fov = 45.0f;
-
-void processInput(GLFWwindow *window, glm::mat4 &view) {
-
+void processInput(GLFWwindow *window) {
+    // Close window
     if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
         glfwSetWindowShouldClose(window, true);
-    float deltaTime = 0.0f;
-    float lastFrame = 0.0f;
 
-    float currentFrame = static_cast<float>(glfwGetTime());
-    deltaTime = currentFrame - lastFrame;
-    lastFrame = currentFrame;
-
-    float cameraSpeed = 0.01f * deltaTime;
+    Camera &camera = *static_cast<Camera *>(glfwGetWindowUserPointer(window));
+    // Movement
     if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
-        cameraPos -= cameraSpeed * cameraFront;
+        camera.processKeyboard(FORWARD, deltaTime);
     if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS)
-        cameraPos += cameraSpeed * cameraFront;
+        camera.processKeyboard(BACKWARD, deltaTime);
     if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS)
-        cameraPos += glm::normalize(glm::cross(cameraFront, cameraUp)) * cameraSpeed;
+        camera.processKeyboard(LEFT, deltaTime);
     if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
-        cameraPos -= glm::normalize(glm::cross(cameraFront, cameraUp)) * cameraSpeed;
+        camera.processKeyboard(RIGHT, deltaTime);
     if (glfwGetKey(window, GLFW_KEY_SPACE) == GLFW_PRESS)
-        cameraPos += cameraSpeed * cameraUp;
+        camera.processKeyboard(UPWARD, deltaTime);
     if (glfwGetKey(window, GLFW_KEY_LEFT_SHIFT) == GLFW_PRESS)
-        cameraPos -= cameraSpeed * cameraUp;
-    if (glfwGetKey(window, GLFW_KEY_1) == GLFW_PRESS)
-        glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
-    if (glfwGetKey(window, GLFW_KEY_2) == GLFW_PRESS)
-        glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
-    view = glm::lookAt(cameraPos, cameraPos - cameraFront, cameraUp);
+        camera.processKeyboard(DOWNWARD, deltaTime);
+
+    // // Toggle texture with a key (e.g., T key)
+    // static bool textureKeyPressed = false;
+    // if (glfwGetKey(window, GLFW_KEY_T) == GLFW_PRESS && !textureKeyPressed) {
+    //     textureEnabled = !textureEnabled;
+    //     transitioning = true;
+    //     textureKeyPressed = true;
+    // }
+    // if (glfwGetKey(window, GLFW_KEY_T) == GLFW_RELEASE) {
+    //     textureKeyPressed = false;
+    // }
 }
 
-void mouse_callback(GLFWwindow *window, double xpos, double ypos) {
-    static bool  firstMouse = true;
-    static float lastX = 400, lastY = 300;
-    static float yaw = -90.0f, pitch = 0.0f;
-    (void)window;
-    std::cout << "xpos: " << xpos << " ypos: " << ypos << std::endl;
+void mouse_callback(GLFWwindow *window, double xposIn, double yposIn) {
+    float xpos = static_cast<float>(xposIn);
+    float ypos = static_cast<float>(yposIn);
+
     if (firstMouse) {
-        lastX = static_cast<float>(xpos);
-        lastY = static_cast<float>(ypos);
+        lastX = xpos;
+        lastY = ypos;
         firstMouse = false;
     }
 
-    float xoffset = static_cast<float>(xpos) - lastX;
-    float yoffset = lastY - static_cast<float>(ypos);
-    lastX = static_cast<float>(xpos);
-    lastY = static_cast<float>(ypos);
+    float xoffset = xpos - lastX;
+    float yoffset = lastY - ypos; // Reversed since y-coordinates go from bottom to top
 
-    float sensitivity = 0.1f;
-    xoffset *= sensitivity;
-    yoffset *= sensitivity;
+    lastX = xpos;
+    lastY = ypos;
 
-    yaw += xoffset;
-    pitch -= yoffset;
-
-    if (pitch > 89.0f)
-        pitch = 89.0f;
-    if (pitch < -89.0f)
-        pitch = -89.0f;
-
-    glm::vec3 front;
-    front.x = cosf(glm::radians(yaw)) * cosf(glm::radians(pitch));
-    front.y = sinf(glm::radians(pitch));
-    front.z = sinf(glm::radians(yaw)) * cosf(glm::radians(pitch));
-
-    cameraFront = glm::normalize(front);
+    Camera &camera = *static_cast<Camera *>(glfwGetWindowUserPointer(window));
+    camera.processMouseMovement(xoffset, yoffset);
 }
 
-static void scroll_callback(GLFWwindow *window, double xoffset, double yoffset) {
-    (void)window;
+void scroll_callback(GLFWwindow *window, double xoffset, double yoffset) {
     (void)xoffset;
-    if (fov >= 1.0f && fov <= 179.0f)
-        fov -= static_cast<float>(yoffset);
-    if (fov <= 1.0f)
-        fov = 1.0f;
-    if (fov >= 179.0f)
-        fov = 179.0f;
+
+    Camera &camera = *static_cast<Camera *>(glfwGetWindowUserPointer(window));
+    camera.processMouseScroll(static_cast<float>(yoffset));
 }
 
 static void fps_counter(GLFWwindow *window) {
@@ -205,26 +201,31 @@ void createBuffers(unsigned int &VAO, unsigned int &VBO, unsigned int &EBO) {
 
 // Main render loop
 void renderLoop(GLFWwindow *window, class Shader &shader, unsigned int VAO, unsigned int EBO,
-                unsigned int texture1, unsigned int texture2) {
+                Camera &camera) {
     while (!glfwWindowShouldClose(window)) {
-        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-        glEnable(GL_DEPTH_TEST);
-        shader.use();
 
-        glm::mat4 view(1.0f);
+        float currentFrame = static_cast<float>(glfwGetTime());
+        deltaTime = currentFrame - lastFrame;
+        lastFrame = currentFrame;
 
-        processInput(window, view);
+        // Input processing
+        processInput(window);
 
-        (void)texture1;
-        (void)texture2;
         // Clear screen
         glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT);
 
-        // Use shader program and draw
+        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+        glEnable(GL_DEPTH_TEST);
 
-        glm::mat4 projection(1.0f);
-        projection = glm::perspective(glm::radians(fov), 800.0f / 600.0f, 0.1f, 100.0f);
+        // Use shader program and draw
+        shader.use();
+
+        glm::mat4 projection = camera.getProjectionMatrix();
+        glm::mat4 view = camera.getViewMatrix();
+
+        shader.setMat4("view", view);
+        shader.setMat4("projection", projection);
 
         shader.setInt("texture1", 0);
         shader.setInt("texture2", 1);
@@ -249,8 +250,6 @@ void renderLoop(GLFWwindow *window, class Shader &shader, unsigned int VAO, unsi
                 angle = 20.0f * static_cast<float>(i + 1);
             model = glm::rotate(model, glm::radians(angle), glm::vec3(1.0f, 0.3f, 0.5f));
             shader.setMat4("model", model);
-            shader.setMat4("view", view);
-            shader.setMat4("projection", projection);
             glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_INT,
                            reinterpret_cast<void *>(static_cast<uintptr_t>(0)));
         }
@@ -281,8 +280,20 @@ int main() {
 
     {
         // Create shader program
-        class Shader shader("shaders/vertex.glsl", "shaders/fragment.glsl");
+        class Shader shader;
+        Camera       camera(glm::vec3(0.0f, 0.0f, 3.0f));
 
+        glfwSetWindowUserPointer(window, &camera);
+
+        shader.addShaderFromFile("shaders/vertex.glsl", GL_VERTEX_SHADER);
+        shader.addShaderFromFile("shaders/fragment.glsl", GL_FRAGMENT_SHADER);
+
+        try {
+            shader.link();
+        } catch (const std::runtime_error &e) {
+            std::cerr << e.what() << std::endl;
+            return -1;
+        }
         // Create and bind buffers (VAO, VBO, EBO)
         unsigned int VAO, VBO, EBO;
         createBuffers(VAO, VBO, EBO);
@@ -327,7 +338,7 @@ int main() {
         stbi_image_free(data2);
 
         // Render loop
-        renderLoop(window, shader, VAO, EBO, texture1, texture2);
+        renderLoop(window, shader, VAO, EBO, camera);
 
         // Cleanup
         glDeleteVertexArrays(1, &VAO);
