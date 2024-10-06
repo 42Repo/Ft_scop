@@ -10,6 +10,7 @@
 #include <glm/gtc/type_ptr.hpp>
 #include <iostream>
 #include <sstream>
+#include <vector>
 
 void        framebuffer_size_callback(GLFWwindow *window, int width, int height);
 void        processInput(GLFWwindow *window);
