@@ -1,4 +1,5 @@
 #include "include/Camera.h"
+#include "include/Mesh.h"
 #include "include/Shader.h"
 #include "include/includes.h"
 #include <glm/gtc/matrix_transform.hpp>
@@ -130,78 +131,30 @@ bool initGLAD() {
     return true;
 }
 
-// Create VAO, VBO and EBO for the triangle vertices
-void createBuffers(unsigned int &VAO, unsigned int &VBO, unsigned int &EBO) {
-    float vertices[] = {
-        // positions          // texture coords
-        // Front face
-        -0.5f, -0.5f, 0.5f, 0.0f, 0.0f, // bottom left
-        0.5f, -0.5f, 0.5f, 1.0f, 0.0f,  // bottom right
-        0.5f, 0.5f, 0.5f, 1.0f, 1.0f,   // top right
-        -0.5f, 0.5f, 0.5f, 0.0f, 1.0f,  // top left
+// // Create VAO, VBO and EBO for the triangle vertices
+// void createBuffers(unsigned int &VAO, unsigned int &VBO, unsigned int &EBO) {
 
-        // Back face
-        -0.5f, -0.5f, -0.5f, 0.0f, 0.0f, // bottom left
-        0.5f, -0.5f, -0.5f, 1.0f, 0.0f,  // bottom right
-        0.5f, 0.5f, -0.5f, 1.0f, 1.0f,   // top right
-        -0.5f, 0.5f, -0.5f, 0.0f, 1.0f,  // top left
+//     glGenVertexArrays(1, &VAO);
+//     glGenBuffers(1, &VBO);
+//     glGenBuffers(1, &EBO);
 
-        // Left face
-        -0.5f, 0.5f, 0.5f, 1.0f, 0.0f,   // top right
-        -0.5f, 0.5f, -0.5f, 1.0f, 1.0f,  // top left
-        -0.5f, -0.5f, -0.5f, 0.0f, 1.0f, // bottom left
-        -0.5f, -0.5f, 0.5f, 0.0f, 0.0f,  // bottom right
+//     glBindVertexArray(VAO);
+//     glBindBuffer(GL_ARRAY_BUFFER, VBO);
+//     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
+//     glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
+//     glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
 
-        // Right face
-        0.5f, 0.5f, 0.5f, 1.0f, 0.0f,   // top left
-        0.5f, 0.5f, -0.5f, 1.0f, 1.0f,  // top right
-        0.5f, -0.5f, -0.5f, 0.0f, 1.0f, // bottom right
-        0.5f, -0.5f, 0.5f, 0.0f, 0.0f,  // bottom left
+//     glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(float),
+//                           reinterpret_cast<void *>(static_cast<uintptr_t>(0)));
+//     glEnableVertexAttribArray(0);
 
-        // Top face
-        -0.5f, 0.5f, -0.5f, 0.0f, 1.0f, // top left
-        0.5f, 0.5f, -0.5f, 1.0f, 1.0f,  // top right
-        0.5f, 0.5f, 0.5f, 1.0f, 0.0f,   // bottom right
-        -0.5f, 0.5f, 0.5f, 0.0f, 0.0f,  // bottom left
-
-        // Bottom face
-        -0.5f, -0.5f, -0.5f, 0.0f, 1.0f, // top right
-        0.5f, -0.5f, -0.5f, 1.0f, 1.0f,  // top left
-        0.5f, -0.5f, 0.5f, 1.0f, 0.0f,   // bottom left
-        -0.5f, -0.5f, 0.5f, 0.0f, 0.0f   // bottom right
-    };
-
-    unsigned int indices[] = {
-        0,  1,  2,  2,  3,  0,  // front face
-        4,  5,  6,  6,  7,  4,  // back face
-        8,  9,  10, 10, 11, 8,  // left face
-        12, 13, 14, 14, 15, 12, // right face
-        16, 17, 18, 18, 19, 16, // top face
-        20, 21, 22, 22, 23, 20  // bottom face
-    };
-
-    glGenVertexArrays(1, &VAO);
-    glGenBuffers(1, &VBO);
-    glGenBuffers(1, &EBO);
-
-    glBindVertexArray(VAO);
-    glBindBuffer(GL_ARRAY_BUFFER, VBO);
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
-    glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
-
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(float),
-                          reinterpret_cast<void *>(static_cast<uintptr_t>(0)));
-    glEnableVertexAttribArray(0);
-
-    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(float),
-                          reinterpret_cast<void *>(static_cast<uintptr_t>(3 * sizeof(float))));
-    glEnableVertexAttribArray(1);
-}
+//     glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(float),
+//                           reinterpret_cast<void *>(static_cast<uintptr_t>(3 * sizeof(float))));
+//     glEnableVertexAttribArray(1);
+// }
 
 // Main render loop
-void renderLoop(GLFWwindow *window, class Shader &shader, unsigned int VAO, unsigned int EBO,
-                Camera &camera) {
+void renderLoop(GLFWwindow *window, class Shader &shader, Camera &camera, Mesh &cubeMesh) {
     while (!glfwWindowShouldClose(window)) {
 
         float currentFrame = static_cast<float>(glfwGetTime());
@@ -230,8 +183,8 @@ void renderLoop(GLFWwindow *window, class Shader &shader, unsigned int VAO, unsi
         shader.setInt("texture1", 0);
         shader.setInt("texture2", 1);
 
-        glBindVertexArray(VAO);
-        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
+        // glBindVertexArray(VAO);
+        // glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
 
         std::vector<glm::vec3> cubePositions = {
             glm::vec3(0.0f, 0.0f, 0.0f),    glm::vec3(2.0f, 5.0f, -15.0f),
@@ -250,8 +203,9 @@ void renderLoop(GLFWwindow *window, class Shader &shader, unsigned int VAO, unsi
                 angle = 20.0f * static_cast<float>(i + 1);
             model = glm::rotate(model, glm::radians(angle), glm::vec3(1.0f, 0.3f, 0.5f));
             shader.setMat4("model", model);
-            glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_INT,
-                           reinterpret_cast<void *>(static_cast<uintptr_t>(0)));
+            // glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_INT,
+            //                reinterpret_cast<void *>(static_cast<uintptr_t>(0)));
+            cubeMesh.draw();
         }
 
         fps_counter(window);
@@ -263,6 +217,54 @@ void renderLoop(GLFWwindow *window, class Shader &shader, unsigned int VAO, unsi
 
 int main() {
     // Initialize GLFW
+    std::vector<Vertex> vertices = {
+        // positions           // texture coords
+        // Front face
+        {{-0.5f, -0.5f, 0.5f}, {}, {0.0f, 0.0f}}, // bottom left
+        {{0.5f, -0.5f, 0.5f}, {}, {1.0f, 0.0f}},  // bottom right
+        {{0.5f, 0.5f, 0.5f}, {}, {1.0f, 1.0f}},   // top right
+        {{-0.5f, 0.5f, 0.5f}, {}, {0.0f, 1.0f}},  // top left
+
+        // Back face
+        {{-0.5f, -0.5f, -0.5f}, {}, {0.0f, 0.0f}}, // bottom left
+        {{0.5f, -0.5f, -0.5f}, {}, {1.0f, 0.0f}},  // bottom right
+        {{0.5f, 0.5f, -0.5f}, {}, {1.0f, 1.0f}},   // top right
+        {{-0.5f, 0.5f, -0.5f}, {}, {0.0f, 1.0f}},  // top left
+
+        // Left face
+        {{-0.5f, 0.5f, 0.5f}, {}, {1.0f, 0.0f}},   // top right
+        {{-0.5f, 0.5f, -0.5f}, {}, {1.0f, 1.0f}},  // top left
+        {{-0.5f, -0.5f, -0.5f}, {}, {0.0f, 1.0f}}, // bottom left
+        {{-0.5f, -0.5f, 0.5f}, {}, {0.0f, 0.0f}},  // bottom right
+
+        // Right face
+        {{0.5f, 0.5f, 0.5f}, {}, {1.0f, 0.0f}},   // top left
+        {{0.5f, 0.5f, -0.5f}, {}, {1.0f, 1.0f}},  // top right
+        {{0.5f, -0.5f, -0.5f}, {}, {0.0f, 1.0f}}, // bottom right
+        {{0.5f, -0.5f, 0.5f}, {}, {0.0f, 0.0f}},  // bottom left
+
+        // Top face
+        {{-0.5f, 0.5f, -0.5f}, {}, {0.0f, 1.0f}}, // top left
+        {{0.5f, 0.5f, -0.5f}, {}, {1.0f, 1.0f}},  // top right
+        {{0.5f, 0.5f, 0.5f}, {}, {1.0f, 0.0f}},   // bottom right
+        {{-0.5f, 0.5f, 0.5f}, {}, {0.0f, 0.0f}},  // bottom left
+
+        // Bottom face
+        {{-0.5f, -0.5f, -0.5f}, {}, {0.0f, 1.0f}}, // top right
+        {{0.5f, -0.5f, -0.5f}, {}, {1.0f, 1.0f}},  // top left
+        {{0.5f, -0.5f, 0.5f}, {}, {1.0f, 0.0f}},   // bottom left
+        {{-0.5f, -0.5f, 0.5f}, {}, {0.0f, 0.0f}}   // bottom right
+    };
+
+    std::vector<unsigned int> indices = {
+        0,  1,  2,  2,  3,  0,  // front face
+        4,  5,  6,  6,  7,  4,  // back face
+        8,  9,  10, 10, 11, 8,  // left face
+        12, 13, 14, 14, 15, 12, // right face
+        16, 17, 18, 18, 19, 16, // top face
+        20, 21, 22, 22, 23, 20  // bottom face
+    };
+
     GLFWwindow *window = initGLFW();
     if (!window)
         return -1;
@@ -295,8 +297,10 @@ int main() {
             return -1;
         }
         // Create and bind buffers (VAO, VBO, EBO)
-        unsigned int VAO, VBO, EBO;
-        createBuffers(VAO, VBO, EBO);
+        Mesh cubeMesh(vertices, indices);
+
+        // unsigned int VAO, VBO, EBO;
+        // createBuffers(VAO, VBO, EBO);
 
         // Texture wrapping and filtering
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
@@ -338,12 +342,7 @@ int main() {
         stbi_image_free(data2);
 
         // Render loop
-        renderLoop(window, shader, VAO, EBO, camera);
-
-        // Cleanup
-        glDeleteVertexArrays(1, &VAO);
-        glDeleteBuffers(1, &VBO);
-        glDeleteBuffers(1, &EBO);
+        renderLoop(window, shader, camera, cubeMesh);
     }
     glfwTerminate();
     return 0;
