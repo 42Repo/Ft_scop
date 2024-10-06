@@ -125,30 +125,22 @@ void renderLoop(GLFWwindow *window, class Shader &shader, unsigned int VAO, unsi
 
         // Use shader program and draw
         shader.use();
-        // glm::mat4 trans(1.0f);
-        // trans = glm::translate(trans, glm::vec3(-0.5f, -0.5f, 0.f));
-        // trans = glm::rotate(trans, static_cast<float>(glfwGetTime()), glm::vec3(0.0f,
-        // 0.0f,1.0f)); trans = glm::scale(trans, glm::vec3(0.5f, 0.5f, 0.5f));
 
-        // glm::mat4 model(1.0f);
-        // model = glm::rotate(model, glm::radians(-55.0f), glm::vec3(1.0f, 0.0f, 0.0f));
-        // model = glm::rotate(model, static_cast<float>(glfwGetTime()) * glm::radians(50.0f),
-        //                     glm::vec3(0.5f, 1.0f, 0.0f));
-
+        float     radius = 10.0f;
+        float     camX = sinf(static_cast<float>(glfwGetTime())) * radius;
+        float     camZ = cosf(static_cast<float>(glfwGetTime())) * radius;
         glm::mat4 view(1.0f);
-        view = glm::translate(view, glm::vec3(0.0f, 0.0f, -3.0f));
+        view = glm::lookAt(glm::vec3(camX, 0.0, camZ), glm::vec3(0.0, 0.0, 0.0),
+                           glm::vec3(0.0, 1.0, 0.0));
 
         glm::mat4 projection(1.0f);
         projection = glm::perspective(glm::radians(45.0f), 800.0f / 600.0f, 0.1f, 100.0f);
-
-        // shader.setMat4("model", model);
 
         shader.setInt("texture1", 0);
         shader.setInt("texture2", 1);
 
         glBindVertexArray(VAO);
         glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
-        // glBindTexture(GL_TEXTURE_2D, texture1);
 
         std::vector<glm::vec3> cubePositions = {
             glm::vec3(0.0f, 0.0f, 0.0f),    glm::vec3(2.0f, 5.0f, -15.0f),
@@ -160,14 +152,17 @@ void renderLoop(GLFWwindow *window, class Shader &shader, unsigned int VAO, unsi
         for (unsigned int i = 0; i < cubePositions.size(); i++) {
             glm::mat4 model(1.0f);
             model = glm::translate(model, cubePositions[i]);
-            float angle = 20.0f * static_cast<float>(i) * static_cast<float>(glfwGetTime());
+            float angle;
+            if (i < 3)
+                angle = 20.0f * static_cast<float>(i + 1) * static_cast<float>(glfwGetTime());
+            else
+                angle = 20.0f * static_cast<float>(i + 1);
             model = glm::rotate(model, glm::radians(angle), glm::vec3(1.0f, 0.3f, 0.5f));
             shader.setMat4("model", model);
             shader.setMat4("view", view);
             shader.setMat4("projection", projection);
             glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_INT,
                            reinterpret_cast<void *>(static_cast<uintptr_t>(0)));
-            // glDrawArrays(GL_TRIANGLES, 0, 36);
         }
 
         // Swap buffers and poll events
