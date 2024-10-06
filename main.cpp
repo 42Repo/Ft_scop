@@ -9,6 +9,7 @@ void framebuffer_size_callback(GLFWwindow *window, int width, int height) {
 static glm::vec3 cameraPos = glm::vec3(0.0f, 0.0f, -3.0f);
 static glm::vec3 cameraFront = glm::vec3(0.0f, 0.0f, -1.0f);
 static glm::vec3 cameraUp = glm::vec3(0.0f, 1.0f, 0.0f);
+static float     fov = 45.0f;
 
 void processInput(GLFWwindow *window, glm::mat4 &view) {
 
@@ -34,8 +35,6 @@ void processInput(GLFWwindow *window, glm::mat4 &view) {
         cameraPos += cameraSpeed * cameraUp;
     if (glfwGetKey(window, GLFW_KEY_LEFT_SHIFT) == GLFW_PRESS)
         cameraPos -= cameraSpeed * cameraUp;
-    // si j'ai appuyer une fois sur num pas 0 alors je change la vue en wireframe mode et si je
-    // rappuie je reviens en normal
     if (glfwGetKey(window, GLFW_KEY_1) == GLFW_PRESS)
         glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
     if (glfwGetKey(window, GLFW_KEY_2) == GLFW_PRESS)
@@ -78,6 +77,17 @@ void mouse_callback(GLFWwindow *window, double xpos, double ypos) {
     front.z = sinf(glm::radians(yaw)) * cosf(glm::radians(pitch));
 
     cameraFront = glm::normalize(front);
+}
+
+static void scroll_callback(GLFWwindow *window, double xoffset, double yoffset) {
+    (void)window;
+    (void)xoffset;
+    if (fov >= 1.0f && fov <= 179.0f)
+        fov -= static_cast<float>(yoffset);
+    if (fov <= 1.0f)
+        fov = 1.0f;
+    if (fov >= 179.0f)
+        fov = 179.0f;
 }
 
 static void fps_counter(GLFWwindow *window) {
@@ -191,8 +201,6 @@ void createBuffers(unsigned int &VAO, unsigned int &VBO, unsigned int &EBO) {
     glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(float),
                           reinterpret_cast<void *>(static_cast<uintptr_t>(3 * sizeof(float))));
     glEnableVertexAttribArray(1);
-
-    // Wireframe mode
 }
 
 // Main render loop
@@ -216,7 +224,7 @@ void renderLoop(GLFWwindow *window, class Shader &shader, unsigned int VAO, unsi
         // Use shader program and draw
 
         glm::mat4 projection(1.0f);
-        projection = glm::perspective(glm::radians(45.0f), 800.0f / 600.0f, 0.1f, 100.0f);
+        projection = glm::perspective(glm::radians(fov), 800.0f / 600.0f, 0.1f, 100.0f);
 
         shader.setInt("texture1", 0);
         shader.setInt("texture2", 1);
@@ -269,6 +277,7 @@ int main() {
     glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
     glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
     glfwSetCursorPosCallback(window, mouse_callback);
+    glfwSetScrollCallback(window, scroll_callback);
 
     {
         // Create shader program
