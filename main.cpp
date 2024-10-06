@@ -1,6 +1,7 @@
 #include "include/Camera.h"
 #include "include/Mesh.h"
 #include "include/Shader.h"
+#include "include/Texture.h"
 #include "include/includes.h"
 #include <glm/gtc/matrix_transform.hpp>
 
@@ -131,30 +132,10 @@ bool initGLAD() {
     return true;
 }
 
-// // Create VAO, VBO and EBO for the triangle vertices
-// void createBuffers(unsigned int &VAO, unsigned int &VBO, unsigned int &EBO) {
-
-//     glGenVertexArrays(1, &VAO);
-//     glGenBuffers(1, &VBO);
-//     glGenBuffers(1, &EBO);
-
-//     glBindVertexArray(VAO);
-//     glBindBuffer(GL_ARRAY_BUFFER, VBO);
-//     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
-//     glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
-//     glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
-
-//     glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(float),
-//                           reinterpret_cast<void *>(static_cast<uintptr_t>(0)));
-//     glEnableVertexAttribArray(0);
-
-//     glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(float),
-//                           reinterpret_cast<void *>(static_cast<uintptr_t>(3 * sizeof(float))));
-//     glEnableVertexAttribArray(1);
-// }
 
 // Main render loop
-void renderLoop(GLFWwindow *window, class Shader &shader, Camera &camera, Mesh &cubeMesh) {
+void renderLoop(GLFWwindow *window, class Shader &shader, Camera &camera, Mesh &cubeMesh,
+                Texture &texture1, Texture &texture2) {
     while (!glfwWindowShouldClose(window)) {
 
         float currentFrame = static_cast<float>(glfwGetTime());
@@ -183,8 +164,8 @@ void renderLoop(GLFWwindow *window, class Shader &shader, Camera &camera, Mesh &
         shader.setInt("texture1", 0);
         shader.setInt("texture2", 1);
 
-        // glBindVertexArray(VAO);
-        // glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
+        texture1.bind(0);
+        texture2.bind(1);
 
         std::vector<glm::vec3> cubePositions = {
             glm::vec3(0.0f, 0.0f, 0.0f),    glm::vec3(2.0f, 5.0f, -15.0f),
@@ -203,8 +184,6 @@ void renderLoop(GLFWwindow *window, class Shader &shader, Camera &camera, Mesh &
                 angle = 20.0f * static_cast<float>(i + 1);
             model = glm::rotate(model, glm::radians(angle), glm::vec3(1.0f, 0.3f, 0.5f));
             shader.setMat4("model", model);
-            // glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_INT,
-            //                reinterpret_cast<void *>(static_cast<uintptr_t>(0)));
             cubeMesh.draw();
         }
 
@@ -299,50 +278,12 @@ int main() {
         // Create and bind buffers (VAO, VBO, EBO)
         Mesh cubeMesh(vertices, indices);
 
-        // unsigned int VAO, VBO, EBO;
-        // createBuffers(VAO, VBO, EBO);
-
-        // Texture wrapping and filtering
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-        float borderColor[] = {1.0f, 1.0f, 0.0f, 1.0f};
-        glTexParameterfv(GL_TEXTURE_2D, GL_TEXTURE_BORDER_COLOR, borderColor);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-        // glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
-
-        // Load and create a texture
-        int width, height, nrChannels;
-        stbi_set_flip_vertically_on_load(true);
-        unsigned char *data = stbi_load("images/template.png", &width, &height, &nrChannels, 0);
-        if (!data) {
-            std::cout << "Failed to load texture1" << std::endl;
-            return -1;
-        }
-        int            width2, height2, nrChannels2;
-        unsigned char *data2 =
-            stbi_load("images/template(1).png", &width2, &height2, &nrChannels2, 0);
-        if (!data2) {
-            std::cout << "Failed to load texture" << std::endl;
-            return -1;
-        }
-
-        unsigned int texture1, texture2;
-        glGenTextures(1, &texture1);
-        glActiveTexture(GL_TEXTURE0);
-        glBindTexture(GL_TEXTURE_2D, texture1);
-        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, data);
-        glGenerateMipmap(GL_TEXTURE_2D);
-        stbi_image_free(data);
-
-        glGenTextures(1, &texture2);
-        glActiveTexture(GL_TEXTURE1);
-        glBindTexture(GL_TEXTURE_2D, texture2);
-        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width2, height2, 0, GL_RGB, GL_UNSIGNED_BYTE, data2);
-        glGenerateMipmap(GL_TEXTURE_2D);
-        stbi_image_free(data2);
+        // Load textures
+        Texture texture1("images/Untitled.png");
+        Texture texture2("images/Untitled2.jpg");
 
         // Render loop
-        renderLoop(window, shader, camera, cubeMesh);
+        renderLoop(window, shader, camera, cubeMesh, texture1, texture2);
     }
     glfwTerminate();
     return 0;

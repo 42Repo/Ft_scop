@@ -39,6 +39,7 @@ set(SRCS
     src/Shader.cpp
     src/Camera.cpp
     src/Mesh.cpp
+    src/Texture.cpp
     include/add_images_lib.cpp
 )
 

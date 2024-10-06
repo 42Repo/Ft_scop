@@ -13,6 +13,7 @@
 #include <iostream>
 #include <sstream>
 #include <vector>
+#include "Texture.h"
 
 void        framebuffer_size_callback(GLFWwindow *window, int width, int height);
 GLFWwindow *initGLFW();
@@ -21,4 +22,4 @@ void        createBuffers(unsigned int &VAO, unsigned int &VBO, unsigned int &EB
 void        mouse_callback(GLFWwindow *window, double xpos, double ypos);
 void        processInput(GLFWwindow *window);
 void        scroll_callback(GLFWwindow *window, double xoffset, double yoffset);
-void        renderLoop(GLFWwindow *window, class Shader &shader, Camera &camera, Mesh &mesh);
+void        renderLoop(GLFWwindow *window, class Shader &shader, Camera &camera, Mesh &mesh, Texture &texture1, Texture &texture2);
