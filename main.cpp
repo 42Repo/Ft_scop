@@ -6,9 +6,58 @@ void framebuffer_size_callback(GLFWwindow *window, int width, int height) {
     glViewport(0, 0, width, height);
 }
 
-void processInput(GLFWwindow *window) {
+void processInput(GLFWwindow *window, glm::mat4 &view) {
+
+    static glm::vec3 cameraPos = glm::vec3(0.0f, 0.0f, -3.0f);
+    static glm::vec3 cameraFront = glm::vec3(0.0f, 0.0f, -1.0f);
+    static glm::vec3 cameraUp = glm::vec3(0.0f, 1.0f, 0.0f);
+
     if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
         glfwSetWindowShouldClose(window, true);
+    float deltaTime = 0.0f;
+    float lastFrame = 0.0f;
+
+    float currentFrame = static_cast<float>(glfwGetTime());
+    deltaTime = currentFrame - lastFrame;
+    lastFrame = currentFrame;
+
+    float cameraSpeed = 0.01f * deltaTime;
+    if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
+        cameraPos -= cameraSpeed * cameraFront;
+    if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS)
+        cameraPos += cameraSpeed * cameraFront;
+    if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS)
+        cameraPos += glm::normalize(glm::cross(cameraFront, cameraUp)) * cameraSpeed;
+    if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
+        cameraPos -= glm::normalize(glm::cross(cameraFront, cameraUp)) * cameraSpeed;
+    if (glfwGetKey(window, GLFW_KEY_SPACE) == GLFW_PRESS)
+        cameraPos += cameraSpeed * cameraUp;
+    if (glfwGetKey(window, GLFW_KEY_LEFT_SHIFT) == GLFW_PRESS)
+        cameraPos -= cameraSpeed * cameraUp;
+    // si j'ai appuyer une fois sur num pas 0 alors je change la vue en wireframe mode et si je rappuie je reviens en normal
+    if (glfwGetKey(window, GLFW_KEY_1) == GLFW_PRESS)
+        glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+    if (glfwGetKey(window, GLFW_KEY_2) == GLFW_PRESS)
+        glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+    view = glm::lookAt(cameraPos, cameraPos - cameraFront, cameraUp);
+}
+
+static void fps_counter(GLFWwindow *window) {
+    static double previous_seconds = glfwGetTime();
+    static int    frame_count;
+    double        current_seconds = glfwGetTime();
+    double        elapsed_seconds = current_seconds - previous_seconds;
+    if (elapsed_seconds > 0.25) {
+        previous_seconds = current_seconds;
+        double fps = static_cast<double>(frame_count) / elapsed_seconds;
+        double ms_per_frame = 1000.0 / fps;
+
+        std::ostringstream oss;
+        oss << " [FPS: " << fps << " Frame time: " << ms_per_frame << "(ms)]";
+        glfwSetWindowTitle(window, oss.str().c_str());
+        frame_count = 0;
+    }
+    frame_count++;
 }
 
 // Initialize GLFW and create a window
@@ -106,7 +155,6 @@ void createBuffers(unsigned int &VAO, unsigned int &VBO, unsigned int &EBO) {
     glEnableVertexAttribArray(1);
 
     // Wireframe mode
-    // glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 }
 
 // Main render loop
@@ -115,7 +163,11 @@ void renderLoop(GLFWwindow *window, class Shader &shader, unsigned int VAO, unsi
     while (!glfwWindowShouldClose(window)) {
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
         glEnable(GL_DEPTH_TEST);
-        processInput(window);
+        shader.use();
+
+        glm::mat4 view(1.0f);
+
+        processInput(window, view);
 
         (void)texture1;
         (void)texture2;
@@ -124,14 +176,6 @@ void renderLoop(GLFWwindow *window, class Shader &shader, unsigned int VAO, unsi
         glClear(GL_COLOR_BUFFER_BIT);
 
         // Use shader program and draw
-        shader.use();
-
-        float     radius = 10.0f;
-        float     camX = sinf(static_cast<float>(glfwGetTime())) * radius;
-        float     camZ = cosf(static_cast<float>(glfwGetTime())) * radius;
-        glm::mat4 view(1.0f);
-        view = glm::lookAt(glm::vec3(camX, 0.0, camZ), glm::vec3(0.0, 0.0, 0.0),
-                           glm::vec3(0.0, 1.0, 0.0));
 
         glm::mat4 projection(1.0f);
         projection = glm::perspective(glm::radians(45.0f), 800.0f / 600.0f, 0.1f, 100.0f);
@@ -165,6 +209,7 @@ void renderLoop(GLFWwindow *window, class Shader &shader, unsigned int VAO, unsi
                            reinterpret_cast<void *>(static_cast<uintptr_t>(0)));
         }
 
+        fps_counter(window);
         // Swap buffers and poll events
         glfwSwapBuffers(window);
         glfwPollEvents();

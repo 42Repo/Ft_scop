@@ -13,7 +13,7 @@
 #include <vector>
 
 void        framebuffer_size_callback(GLFWwindow *window, int width, int height);
-void        processInput(GLFWwindow *window);
+void        processInput(GLFWwindow *window, glm::mat4 &view);
 GLFWwindow *initGLFW();
 bool        initGLAD();
 void        createBuffers(unsigned int &VAO, unsigned int &VBO, unsigned int &EBO);
