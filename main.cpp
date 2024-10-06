@@ -6,11 +6,11 @@ void framebuffer_size_callback(GLFWwindow *window, int width, int height) {
     glViewport(0, 0, width, height);
 }
 
-void processInput(GLFWwindow *window, glm::mat4 &view) {
+static glm::vec3 cameraPos = glm::vec3(0.0f, 0.0f, -3.0f);
+static glm::vec3 cameraFront = glm::vec3(0.0f, 0.0f, -1.0f);
+static glm::vec3 cameraUp = glm::vec3(0.0f, 1.0f, 0.0f);
 
-    static glm::vec3 cameraPos = glm::vec3(0.0f, 0.0f, -3.0f);
-    static glm::vec3 cameraFront = glm::vec3(0.0f, 0.0f, -1.0f);
-    static glm::vec3 cameraUp = glm::vec3(0.0f, 1.0f, 0.0f);
+void processInput(GLFWwindow *window, glm::mat4 &view) {
 
     if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
         glfwSetWindowShouldClose(window, true);
@@ -34,12 +34,50 @@ void processInput(GLFWwindow *window, glm::mat4 &view) {
         cameraPos += cameraSpeed * cameraUp;
     if (glfwGetKey(window, GLFW_KEY_LEFT_SHIFT) == GLFW_PRESS)
         cameraPos -= cameraSpeed * cameraUp;
-    // si j'ai appuyer une fois sur num pas 0 alors je change la vue en wireframe mode et si je rappuie je reviens en normal
+    // si j'ai appuyer une fois sur num pas 0 alors je change la vue en wireframe mode et si je
+    // rappuie je reviens en normal
     if (glfwGetKey(window, GLFW_KEY_1) == GLFW_PRESS)
         glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
     if (glfwGetKey(window, GLFW_KEY_2) == GLFW_PRESS)
         glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
     view = glm::lookAt(cameraPos, cameraPos - cameraFront, cameraUp);
+}
+
+void mouse_callback(GLFWwindow *window, double xpos, double ypos) {
+    static bool  firstMouse = true;
+    static float lastX = 400, lastY = 300;
+    static float yaw = -90.0f, pitch = 0.0f;
+    (void)window;
+    std::cout << "xpos: " << xpos << " ypos: " << ypos << std::endl;
+    if (firstMouse) {
+        lastX = static_cast<float>(xpos);
+        lastY = static_cast<float>(ypos);
+        firstMouse = false;
+    }
+
+    float xoffset = static_cast<float>(xpos) - lastX;
+    float yoffset = lastY - static_cast<float>(ypos);
+    lastX = static_cast<float>(xpos);
+    lastY = static_cast<float>(ypos);
+
+    float sensitivity = 0.1f;
+    xoffset *= sensitivity;
+    yoffset *= sensitivity;
+
+    yaw += xoffset;
+    pitch -= yoffset;
+
+    if (pitch > 89.0f)
+        pitch = 89.0f;
+    if (pitch < -89.0f)
+        pitch = -89.0f;
+
+    glm::vec3 front;
+    front.x = cosf(glm::radians(yaw)) * cosf(glm::radians(pitch));
+    front.y = sinf(glm::radians(pitch));
+    front.z = sinf(glm::radians(yaw)) * cosf(glm::radians(pitch));
+
+    cameraFront = glm::normalize(front);
 }
 
 static void fps_counter(GLFWwindow *window) {
@@ -229,6 +267,8 @@ int main() {
     // Set viewport and callback
     glViewport(0, 0, 800, 600);
     glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
+    glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+    glfwSetCursorPosCallback(window, mouse_callback);
 
     {
         // Create shader program

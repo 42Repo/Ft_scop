@@ -19,3 +19,4 @@ bool        initGLAD();
 void        createBuffers(unsigned int &VAO, unsigned int &VBO, unsigned int &EBO);
 void        renderLoop(GLFWwindow *window, class Shader &shader, unsigned int VAO, unsigned int EBO,
                        unsigned int texture1, unsigned int texture2);
+void        mouse_callback(GLFWwindow *window, double xpos, double ypos);
