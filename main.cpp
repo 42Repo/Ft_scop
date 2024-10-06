@@ -105,7 +105,6 @@ void createBuffers(unsigned int &VAO, unsigned int &VBO, unsigned int &EBO) {
                           reinterpret_cast<void *>(static_cast<uintptr_t>(3 * sizeof(float))));
     glEnableVertexAttribArray(1);
 
-
     // Wireframe mode
     // glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 }
@@ -161,7 +160,7 @@ void renderLoop(GLFWwindow *window, class Shader &shader, unsigned int VAO, unsi
         for (unsigned int i = 0; i < cubePositions.size(); i++) {
             glm::mat4 model(1.0f);
             model = glm::translate(model, cubePositions[i]);
-            float angle = 20.0f * static_cast<float>(i);
+            float angle = 20.0f * static_cast<float>(i) * static_cast<float>(glfwGetTime());
             model = glm::rotate(model, glm::radians(angle), glm::vec3(1.0f, 0.3f, 0.5f));
             shader.setMat4("model", model);
             shader.setMat4("view", view);
