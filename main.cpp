@@ -77,20 +77,32 @@ void createBuffers(unsigned int &VAO, unsigned int &VBO, unsigned int &EBO) {
 
 // Main render loop
 void renderLoop(GLFWwindow *window, class Shader &shader, unsigned int VAO, unsigned int EBO,
-                unsigned int texture) {
+                unsigned int texture1, unsigned int texture2) {
     while (!glfwWindowShouldClose(window)) {
         processInput(window);
 
+        (void)texture1;
+        (void)texture2;
         // Clear screen
         glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT);
 
         // Use shader program and draw
         shader.use();
+        glm::mat4 trans(1.0f);
+        trans = glm::translate(trans, glm::vec3(-0.5f, -0.5f, 0.f));
+        trans = glm::rotate(trans, static_cast<float>(glfwGetTime()), glm::vec3(0.0f, 0.0f,1.0f));
+        trans = glm::scale(trans, glm::vec3(0.5f, 0.5f, 0.5f));
+
+        int transformLoc = glGetUniformLocation(shader.getID(), "transform");
+        glUniformMatrix4fv(transformLoc, 1, GL_FALSE, glm::value_ptr(trans));
+
+        shader.setInt("texture1", 0);
+        shader.setInt("texture2", 1);
 
         glBindVertexArray(VAO);
         glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
-        glBindTexture(GL_TEXTURE_2D, texture);
+        // glBindTexture(GL_TEXTURE_2D, texture1);
 
         glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT,
                        reinterpret_cast<void *>(static_cast<uintptr_t>(0)));
@@ -136,18 +148,34 @@ int main() {
         stbi_set_flip_vertically_on_load(true);
         unsigned char *data = stbi_load("images/Untitled.png", &width, &height, &nrChannels, 0);
         if (!data) {
+            std::cout << "Failed to load texture1" << std::endl;
+            return -1;
+        }
+        int            width2, height2, nrChannels2;
+        unsigned char *data2 =
+            stbi_load("images/Untitled2.jpg", &width2, &height2, &nrChannels2, 0);
+        if (!data2) {
             std::cout << "Failed to load texture" << std::endl;
             return -1;
         }
-        unsigned int texture;
-        glGenTextures(1, &texture);
-        glBindTexture(GL_TEXTURE_2D, texture);
+
+        unsigned int texture1, texture2;
+        glGenTextures(1, &texture1);
+        glActiveTexture(GL_TEXTURE0);
+        glBindTexture(GL_TEXTURE_2D, texture1);
         glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, data);
         glGenerateMipmap(GL_TEXTURE_2D);
         stbi_image_free(data);
 
+        glGenTextures(1, &texture2);
+        glActiveTexture(GL_TEXTURE1);
+        glBindTexture(GL_TEXTURE_2D, texture2);
+        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width2, height2, 0, GL_RGB, GL_UNSIGNED_BYTE, data2);
+        glGenerateMipmap(GL_TEXTURE_2D);
+        stbi_image_free(data2);
+
         // Render loop
-        renderLoop(window, shader, VAO, EBO, texture);
+        renderLoop(window, shader, VAO, EBO, texture1, texture2);
 
         // Cleanup
         glDeleteVertexArrays(1, &VAO);
