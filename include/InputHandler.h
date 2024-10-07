@@ -12,15 +12,6 @@ class InputHandler {
     // Process input (to be called every frame)
     static void processInput(float deltaTime);
 
-    // Get mouse positions and offsets
-    static float getMouseX();
-    static float getMouseY();
-    static float getMouseDeltaX();
-    static float getMouseDeltaY();
-
-    // Get scroll offset
-    static float getScrollOffset();
-
   private:
     // GLFW window
     static GLFWwindow *_window;

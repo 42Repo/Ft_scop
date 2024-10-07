@@ -54,14 +54,14 @@ void InputHandler::processInput(float deltaTime) {
         _camera->processKeyboard(DOWNWARD, deltaTime);
 
     // Mouse movement (handled in mouseCallback)
-    if (fabs(_mouseDeltaX) > EPSILON || fabs(_mouseDeltaY) > EPSILON) {
+    if (fabsf(_mouseDeltaX) > EPSILON || fabsf(_mouseDeltaY) > EPSILON) {
         _camera->processMouseMovement(_mouseDeltaX, _mouseDeltaY);
         _mouseDeltaX = 0.0f;
         _mouseDeltaY = 0.0f;
     }
 
     // Scroll input (handled in scrollCallback)
-    if (fabs(_scrollOffset) > EPSILON) {
+    if (fabsf(_scrollOffset) > EPSILON) {
         _camera->processMouseScroll(_scrollOffset);
         _scrollOffset = 0.0f;
     }
@@ -88,10 +88,3 @@ void InputHandler::scrollCallback(GLFWwindow *window, double xoffset, double yof
     (void)xoffset;
     _scrollOffset = static_cast<float>(yoffset);
 }
-
-// Optional getters if needed
-float InputHandler::getMouseX() { return _lastMouseX; }
-float InputHandler::getMouseY() { return _lastMouseY; }
-float InputHandler::getMouseDeltaX() { return _mouseDeltaX; }
-float InputHandler::getMouseDeltaY() { return _mouseDeltaY; }
-float InputHandler::getScrollOffset() { return _scrollOffset; }
