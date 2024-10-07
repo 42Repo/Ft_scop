@@ -40,6 +40,8 @@ set(SRCS
     src/Camera.cpp
     src/Mesh.cpp
     src/Texture.cpp
+    src/InputHandler.cpp
+    src/Scene.cpp
     include/add_images_lib.cpp
 )
 

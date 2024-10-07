@@ -1,91 +1,32 @@
-#include "include/Camera.h"
-#include "include/Mesh.h"
-#include "include/Shader.h"
 #include "include/Texture.h"
+#include "include/Camera.h"
+#include "include/InputHandler.h"
+#include "include/Mesh.h"
+#include "include/Scene.h"
+#include "include/Shader.h"
 #include "include/includes.h"
 #include <glm/gtc/matrix_transform.hpp>
 
 // Settings
-const unsigned int SCR_WIDTH = 800;
-const unsigned int SCR_HEIGHT = 600;
+// const unsigned int SCR_WIDTH = 800;
+// const unsigned int SCR_HEIGHT = 600;
 
 // Camera
-static float lastX = SCR_WIDTH / 2.0f;
-static float lastY = SCR_HEIGHT / 2.0f;
-static bool  firstMouse = true;
+// static float lastX = SCR_WIDTH / 2.0f;
+// static float lastY = SCR_HEIGHT / 2.0f;
+// static bool  firstMouse = true;
 
 // Timing
 static float deltaTime = 0.0f;
 static float lastFrame = 0.0f;
 
-// Texture toggle
-// static bool textureEnabled = false;
-// static bool transitioning = false;
-
 void framebuffer_size_callback(GLFWwindow *window, int width, int height) {
     (void)window;
     glViewport(0, 0, width, height);
-    Camera &camera = *static_cast<Camera *>(glfwGetWindowUserPointer(window));
-    camera.setAspectRatio(static_cast<float>(width) / static_cast<float>(height));
-}
-
-void processInput(GLFWwindow *window) {
-    // Close window
-    if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
-        glfwSetWindowShouldClose(window, true);
-
-    Camera &camera = *static_cast<Camera *>(glfwGetWindowUserPointer(window));
-    // Movement
-    if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
-        camera.processKeyboard(FORWARD, deltaTime);
-    if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS)
-        camera.processKeyboard(BACKWARD, deltaTime);
-    if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS)
-        camera.processKeyboard(LEFT, deltaTime);
-    if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
-        camera.processKeyboard(RIGHT, deltaTime);
-    if (glfwGetKey(window, GLFW_KEY_SPACE) == GLFW_PRESS)
-        camera.processKeyboard(UPWARD, deltaTime);
-    if (glfwGetKey(window, GLFW_KEY_LEFT_SHIFT) == GLFW_PRESS)
-        camera.processKeyboard(DOWNWARD, deltaTime);
-
-    // // Toggle texture with a key (e.g., T key)
-    // static bool textureKeyPressed = false;
-    // if (glfwGetKey(window, GLFW_KEY_T) == GLFW_PRESS && !textureKeyPressed) {
-    //     textureEnabled = !textureEnabled;
-    //     transitioning = true;
-    //     textureKeyPressed = true;
-    // }
-    // if (glfwGetKey(window, GLFW_KEY_T) == GLFW_RELEASE) {
-    //     textureKeyPressed = false;
-    // }
-}
-
-void mouse_callback(GLFWwindow *window, double xposIn, double yposIn) {
-    float xpos = static_cast<float>(xposIn);
-    float ypos = static_cast<float>(yposIn);
-
-    if (firstMouse) {
-        lastX = xpos;
-        lastY = ypos;
-        firstMouse = false;
+    Camera *camera = static_cast<Camera *>(glfwGetWindowUserPointer(window));
+    if (camera) {
+        camera->setAspectRatio(static_cast<float>(width) / static_cast<float>(height));
     }
-
-    float xoffset = xpos - lastX;
-    float yoffset = lastY - ypos; // Reversed since y-coordinates go from bottom to top
-
-    lastX = xpos;
-    lastY = ypos;
-
-    Camera &camera = *static_cast<Camera *>(glfwGetWindowUserPointer(window));
-    camera.processMouseMovement(xoffset, yoffset);
-}
-
-void scroll_callback(GLFWwindow *window, double xoffset, double yoffset) {
-    (void)xoffset;
-
-    Camera &camera = *static_cast<Camera *>(glfwGetWindowUserPointer(window));
-    camera.processMouseScroll(static_cast<float>(yoffset));
 }
 
 static void fps_counter(GLFWwindow *window) {
@@ -130,68 +71,6 @@ bool initGLAD() {
         return false;
     }
     return true;
-}
-
-
-// Main render loop
-void renderLoop(GLFWwindow *window, class Shader &shader, Camera &camera, Mesh &cubeMesh,
-                Texture &texture1, Texture &texture2) {
-    while (!glfwWindowShouldClose(window)) {
-
-        float currentFrame = static_cast<float>(glfwGetTime());
-        deltaTime = currentFrame - lastFrame;
-        lastFrame = currentFrame;
-
-        // Input processing
-        processInput(window);
-
-        // Clear screen
-        glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
-        glClear(GL_COLOR_BUFFER_BIT);
-
-        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-        glEnable(GL_DEPTH_TEST);
-
-        // Use shader program and draw
-        shader.use();
-
-        glm::mat4 projection = camera.getProjectionMatrix();
-        glm::mat4 view = camera.getViewMatrix();
-
-        shader.setMat4("view", view);
-        shader.setMat4("projection", projection);
-
-        shader.setInt("texture1", 0);
-        shader.setInt("texture2", 1);
-
-        texture1.bind(0);
-        texture2.bind(1);
-
-        std::vector<glm::vec3> cubePositions = {
-            glm::vec3(0.0f, 0.0f, 0.0f),    glm::vec3(2.0f, 5.0f, -15.0f),
-            glm::vec3(-1.5f, -2.2f, -2.5f), glm::vec3(-3.8f, -2.0f, -12.3f),
-            glm::vec3(2.4f, -0.4f, -3.5f),  glm::vec3(-1.7f, 3.0f, -7.5f),
-            glm::vec3(1.3f, -2.0f, -2.5f),  glm::vec3(1.5f, 2.0f, -2.5f),
-            glm::vec3(1.5f, 0.2f, -1.5f),   glm::vec3(-1.3f, 1.0f, -1.5f)};
-
-        for (unsigned int i = 0; i < cubePositions.size(); i++) {
-            glm::mat4 model(1.0f);
-            model = glm::translate(model, cubePositions[i]);
-            float angle;
-            if (i < 3)
-                angle = 20.0f * static_cast<float>(i + 1) * static_cast<float>(glfwGetTime());
-            else
-                angle = 20.0f * static_cast<float>(i + 1);
-            model = glm::rotate(model, glm::radians(angle), glm::vec3(1.0f, 0.3f, 0.5f));
-            shader.setMat4("model", model);
-            cubeMesh.draw();
-        }
-
-        fps_counter(window);
-        // Swap buffers and poll events
-        glfwSwapBuffers(window);
-        glfwPollEvents();
-    }
 }
 
 int main() {
@@ -254,36 +133,65 @@ int main() {
 
     // Set viewport and callback
     glViewport(0, 0, 800, 600);
-    glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
     glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
-    glfwSetCursorPosCallback(window, mouse_callback);
-    glfwSetScrollCallback(window, scroll_callback);
 
     {
         // Create shader program
-        class Shader shader;
-        Camera       camera(glm::vec3(0.0f, 0.0f, 3.0f));
+        Scene scene;
 
-        glfwSetWindowUserPointer(window, &camera);
+        auto shader = std::make_shared<Shader>();
 
-        shader.addShaderFromFile("shaders/vertex.glsl", GL_VERTEX_SHADER);
-        shader.addShaderFromFile("shaders/fragment.glsl", GL_FRAGMENT_SHADER);
+        // class Shader shader;
+
+        shader->addShaderFromFile("shaders/vertex.glsl", GL_VERTEX_SHADER);
+        shader->addShaderFromFile("shaders/fragment.glsl", GL_FRAGMENT_SHADER);
 
         try {
-            shader.link();
+            shader->link();
         } catch (const std::runtime_error &e) {
             std::cerr << e.what() << std::endl;
             return -1;
         }
-        // Create and bind buffers (VAO, VBO, EBO)
-        Mesh cubeMesh(vertices, indices);
+
+        scene.addShader(shader);
+
+        auto camera = std::make_shared<Camera>(glm::vec3(0.0f, 0.0f, 3.0f));
+        camera->setAspectRatio(800.0f / 600.0f);
+        scene.addCamera(camera);
+        scene.setActiveCamera(0);
+
+        glfwSetWindowUserPointer(window, camera.get());
+
+        glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
+
+        InputHandler::initialize(window, camera.get());
+
+        auto cubeMesh = std::make_shared<Mesh>(vertices, indices);
+        scene.addMesh(cubeMesh);
 
         // Load textures
-        Texture texture1("images/Untitled.png");
-        Texture texture2("images/Untitled2.jpg");
+        auto texture1 = std::make_shared<Texture>("images/Untitled.png");
+        auto texture2 = std::make_shared<Texture>("images/Untitled2.jpg");
+        scene.addTexture(texture1);
+        scene.addTexture(texture2);
 
         // Render loop
-        renderLoop(window, shader, camera, cubeMesh, texture1, texture2);
+        while (!glfwWindowShouldClose(window)) {
+
+            float currentFrame = static_cast<float>(glfwGetTime());
+            deltaTime = currentFrame - lastFrame;
+            lastFrame = currentFrame;
+
+            // Input processing
+            InputHandler::processInput(deltaTime);
+
+            scene.render();
+
+            fps_counter(window);
+            // Swap buffers and poll events
+            glfwSwapBuffers(window);
+            glfwPollEvents();
+        }
     }
     glfwTerminate();
     return 0;

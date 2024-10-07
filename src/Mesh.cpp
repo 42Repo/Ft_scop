@@ -1,4 +1,5 @@
 #include "../include/Mesh.h"
+#include "../include/glad/glad.h"
 
 Mesh::Mesh(const std::vector<Vertex> &vertices, const std::vector<unsigned int> &indices)
     : _vertices(vertices),
