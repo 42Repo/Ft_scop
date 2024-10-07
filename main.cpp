@@ -160,6 +160,21 @@ int main() {
         auto cubeMesh = std::make_shared<Mesh>(vertices, indices);
         scene.addMesh(cubeMesh);
 
+        cubeMesh->setModelMatrix(glm::mat4(1.0f)); // Identity matrix
+
+        auto cubeMesh2 = std::make_shared<Mesh>(vertices, indices);
+        scene.addMesh(cubeMesh2);
+
+        glm::mat4 modelMatrix2 = glm::translate(glm::mat4(1.0f), glm::vec3(2.0f, 0.0f, 0.0f));
+        cubeMesh2->setModelMatrix(modelMatrix2);
+
+        auto cubeMesh3 = std::make_shared<Mesh>(vertices, indices);
+        scene.addMesh(cubeMesh3);
+
+        glm::mat4 modelMatrix3 = glm::translate(glm::mat4(1.0f), glm::vec3(-2.0f, 0.0f, 0.0f));
+        modelMatrix3 = glm::rotate(modelMatrix3, glm::radians(45.0f), glm::vec3(0.0f, 1.0f, 0.0f));
+        cubeMesh3->setModelMatrix(modelMatrix3);
+
         // Load textures
         auto texture1 = std::make_shared<Texture>("images/Untitled.png");
         auto texture2 = std::make_shared<Texture>("images/Untitled2.jpg");
@@ -175,6 +190,13 @@ int main() {
 
             // Input processing
             InputHandler::processInput(deltaTime);
+
+            glm::mat4 updatedModelMatrix2 =
+                glm::translate(glm::mat4(1.0f), glm::vec3(2.0f, 0.0f, 0.0f));
+            float angle = currentFrame * glm::radians(50.0f); // Rotate at 50 degrees per second
+            updatedModelMatrix2 =
+                glm::rotate(updatedModelMatrix2, angle, glm::vec3(0.0f, 1.0f, 0.0f));
+            cubeMesh2->setModelMatrix(updatedModelMatrix2);
 
             scene.render();
 

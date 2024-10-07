@@ -51,8 +51,7 @@ void Scene::render() {
 
 void Scene::renderMeshes() {
     for (const auto &mesh : meshes) {
-        // For simplicity, we'll assume each mesh uses the first shader and textures
-        if (shaders.empty() || textures.empty()) {
+        if (shaders.empty()) {
             continue;
         }
 
@@ -63,15 +62,14 @@ void Scene::renderMeshes() {
         shader->setMat4("view", getActiveCamera()->getViewMatrix());
         shader->setMat4("projection", getActiveCamera()->getProjectionMatrix());
 
+        // **Set the mesh's model matrix**
+        shader->setMat4("model", mesh->getModelMatrix());
+
         // Bind textures
         for (size_t i = 0; i < textures.size(); ++i) {
             textures[i]->bind(static_cast<unsigned int>(i));
             shader->setInt("texture" + std::to_string(i + 1), static_cast<int>(i));
         }
-
-        // Set model matrix (you can extend Mesh class to have its own model matrix)
-        glm::mat4 model = glm::mat4(1.0f);
-        shader->setMat4("model", model);
 
         // Draw the mesh
         mesh->draw();

@@ -5,7 +5,7 @@
 
 struct Vertex {
     glm::vec3 position;
-    glm::vec3 normal;
+    glm::vec3 normal; // Optional if using lighting
     glm::vec2 texCoords;
 };
 
@@ -28,6 +28,10 @@ class Mesh {
     // Render the mesh
     void draw() const;
 
+    // **Model matrix methods**
+    void             setModelMatrix(const glm::mat4 &modelMatrix);
+    const glm::mat4 &getModelMatrix() const;
+
   private:
     // Mesh Data
     std::vector<Vertex>       _vertices;
@@ -35,6 +39,9 @@ class Mesh {
 
     // OpenGL buffers
     unsigned int _VAO, _VBO, _EBO;
+
+    // **Model matrix**
+    glm::mat4 _modelMatrix;
 
     // Initializes the buffer objects and vertex attributes
     void setupMesh();

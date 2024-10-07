@@ -6,7 +6,9 @@ Mesh::Mesh(const std::vector<Vertex> &vertices, const std::vector<unsigned int> 
       _indices(indices),
       _VAO(0),
       _VBO(0),
-      _EBO(0) {
+      _EBO(0),
+      _modelMatrix(glm::mat4(1.0f)) // Initialize to identity matrix
+{
     setupMesh();
 }
 
@@ -102,3 +104,7 @@ void Mesh::draw() const {
                    reinterpret_cast<void *>(static_cast<uintptr_t>(0)));
     glBindVertexArray(0);
 }
+
+void Mesh::setModelMatrix(const glm::mat4 &modelMatrix) { _modelMatrix = modelMatrix; }
+
+const glm::mat4 &Mesh::getModelMatrix() const { return _modelMatrix; }
