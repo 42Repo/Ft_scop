@@ -45,7 +45,7 @@ GLFWwindow *initGLFW() {
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 6);
     glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 
-    GLFWwindow *window = glfwCreateWindow(800, 600, "LearnOpenGL", NULL, NULL);
+    GLFWwindow *window = glfwCreateWindow(800, 600, "Scop", NULL, NULL);
     if (window == NULL) {
         std::cout << "Failed to create GLFW window" << std::endl;
         glfwTerminate();
@@ -122,17 +122,15 @@ int main() {
     if (!initGLAD())
         return -1;
 
-    // Set viewport and callback
+    // Set viewport
     glViewport(0, 0, 800, 600);
-    glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 
     {
         // Create shader program
         Scene scene;
 
-        auto shader = std::make_shared<Shader>();
-
         // class Shader shader;
+        auto shader = std::make_shared<Shader>();
 
         shader->addShaderFromFile("shaders/vertex.glsl", GL_VERTEX_SHADER);
         shader->addShaderFromFile("shaders/fragment.glsl", GL_FRAGMENT_SHADER);

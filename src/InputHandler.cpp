@@ -1,6 +1,8 @@
 #include "../include/InputHandler.h"
 #include "../include/Camera.h"
 
+const float EPSILON = 1e-6f;
+
 // Initialize static members
 GLFWwindow *InputHandler::_window = nullptr;
 Camera     *InputHandler::_camera = nullptr;
@@ -52,14 +54,14 @@ void InputHandler::processInput(float deltaTime) {
         _camera->processKeyboard(DOWNWARD, deltaTime);
 
     // Mouse movement (handled in mouseCallback)
-    if (_mouseDeltaX != 0.0f || _mouseDeltaY != 0.0f) {
+    if (fabs(_mouseDeltaX) > EPSILON || fabs(_mouseDeltaY) > EPSILON) {
         _camera->processMouseMovement(_mouseDeltaX, _mouseDeltaY);
         _mouseDeltaX = 0.0f;
         _mouseDeltaY = 0.0f;
     }
 
     // Scroll input (handled in scrollCallback)
-    if (_scrollOffset != 0.0f) {
+    if (fabs(_scrollOffset) > EPSILON) {
         _camera->processMouseScroll(_scrollOffset);
         _scrollOffset = 0.0f;
     }
@@ -67,15 +69,15 @@ void InputHandler::processInput(float deltaTime) {
 
 void InputHandler::mouseCallback(GLFWwindow *window, double xpos, double ypos) {
     (void)window;
-	if (_firstMouse) {
+    if (_firstMouse) {
         _lastMouseX = static_cast<float>(xpos);
         _lastMouseY = static_cast<float>(ypos);
         _firstMouse = false;
     }
 
     _mouseDeltaX = static_cast<float>(xpos) - _lastMouseX;
-    _mouseDeltaY =
-        _lastMouseY - static_cast<float>(ypos); // Reversed since y-coordinates go from bottom to top
+    _mouseDeltaY = _lastMouseY -
+                   static_cast<float>(ypos); // Reversed since y-coordinates go from bottom to top
 
     _lastMouseX = static_cast<float>(xpos);
     _lastMouseY = static_cast<float>(ypos);
