@@ -44,8 +44,6 @@ void Scene::render() {
     if (!camera) {
         return;
     }
-    // glm::mat4 view = camera->getViewMatrix();
-    // glm::mat4 projection = camera->getProjectionMatrix();
 
     // Render all meshes with their associated shaders and textures
     renderMeshes();
