@@ -1,13 +1,15 @@
 
-## Instructions de Build
+# Build Instructions
 
-1. **Clone the Repo**
+## **Clone the Repo**
 
 ```bash
 git clone https://github.com/42Repo/Ft_scop
 cd Ft_scop
 ```
-2.  **Building The Project**
+
+## **Building The Project**
+
 ```bash
 mkdir build
 cd build
