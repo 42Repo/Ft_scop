@@ -6,17 +6,24 @@
 #include "include/Shader.h"
 #include "include/includes.h"
 #include <glm/gtc/matrix_transform.hpp>
+#include <iostream>
+#include <sstream>
 
 // Timing
 static float deltaTime = 0.0f;
 static float lastFrame = 0.0f;
 
 void framebuffer_size_callback(GLFWwindow *window, int width, int height) {
-    (void)window;
     glViewport(0, 0, width, height);
-    Camera *camera = static_cast<Camera *>(glfwGetWindowUserPointer(window));
-    if (camera) {
-        camera->setAspectRatio(static_cast<float>(width) / static_cast<float>(height));
+
+    Scene *scene = static_cast<Scene *>(glfwGetWindowUserPointer(window));
+    if (scene) {
+        float aspectRatio = static_cast<float>(width) / static_cast<float>(height);
+        for (auto &camera : scene->getCameras()) {
+            if (camera) {
+                camera->setAspectRatio(aspectRatio);
+            }
+        }
     }
 }
 
@@ -149,11 +156,15 @@ int main() {
         scene.addCamera(camera);
         scene.setActiveCamera(0);
 
-        glfwSetWindowUserPointer(window, camera.get());
+        auto camera2 = std::make_shared<Camera>(glm::vec3(0.0f, 0.0f, 3.0f)); // Camera 2
+        camera2->setAspectRatio(800.0f / 600.0f);
+        scene.addCamera(camera2);
+
+        glfwSetWindowUserPointer(window, &scene);
 
         glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
 
-        InputHandler::initialize(window, camera.get());
+        InputHandler::initialize(window, &scene);
 
         auto cubeMesh = std::make_shared<Mesh>(vertices, indices);
         scene.addMesh(cubeMesh);

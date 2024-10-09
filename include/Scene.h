@@ -34,9 +34,14 @@ class Scene {
 
     // Set the active camera
     void setActiveCamera(size_t index);
+    void nextCamera();     // Switch to the next camera in the list
+    void previousCamera(); // Switch to the previous camera in the list
 
     // Get the active camera
     std::shared_ptr<Camera> getActiveCamera() const;
+
+    // Get all cameras
+    std::vector<std::shared_ptr<Camera>> &getCameras();
 
     // Update the scene (e.g., handle input, update animations)
     void update(float deltaTime);
@@ -46,14 +51,14 @@ class Scene {
 
   private:
     // Containers for scene elements
-    std::vector<std::shared_ptr<Mesh>>    meshes;
-    std::vector<std::shared_ptr<Texture>> textures;
-    std::vector<std::shared_ptr<Shader>>  shaders;
-    std::vector<std::shared_ptr<Camera>>  cameras;
+    std::vector<std::shared_ptr<Mesh>>    _meshes;
+    std::vector<std::shared_ptr<Texture>> _textures;
+    std::vector<std::shared_ptr<Shader>>  _shaders;
+    std::vector<std::shared_ptr<Camera>>  _cameras;
 
     // Index of the active camera
-    size_t activeCameraIndex;
+    size_t _activeCameraIndex;
 
     // Helper function to render all meshes
-    void renderMeshes();
+    void _renderMeshes();
 };

@@ -6,13 +6,9 @@
 #include "stb_image.h"
 #include <GLFW/glfw3.h>
 #include <cmath>
-#include <fstream>
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
-#include <iostream>
-#include <sstream>
-#include <vector>
 
 void        framebuffer_size_callback(GLFWwindow *window, int width, int height);
 GLFWwindow *initGLFW();

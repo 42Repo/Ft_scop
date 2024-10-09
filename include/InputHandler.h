@@ -2,12 +2,12 @@
 
 #include <GLFW/glfw3.h>
 
-class Camera;
+class Scene;
 
 class InputHandler {
   public:
     // Initialize the input handler with a GLFW window and a camera reference
-    static void initialize(GLFWwindow *window, Camera *camera);
+    static void initialize(GLFWwindow *window, Scene *scene);
 
     // Process input (to be called every frame)
     static void processInput(float deltaTime);
@@ -16,8 +16,8 @@ class InputHandler {
     // GLFW window
     static GLFWwindow *_window;
 
-    // Camera reference
-    static Camera *_camera;
+    // Scene reference
+    static Scene *_scene;
 
     // Last mouse positions
     static float _lastMouseX;
@@ -32,6 +32,9 @@ class InputHandler {
 
     // First mouse movement flag
     static bool _firstMouse;
+
+    // Boolean flags for key presses
+    static bool _keys[1024];
 
     // Callback functionsu
     static void mouseCallback(GLFWwindow *window, double xpos, double ypos);

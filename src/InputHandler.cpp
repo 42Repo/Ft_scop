@@ -1,21 +1,23 @@
 #include "../include/InputHandler.h"
 #include "../include/Camera.h"
+#include "../include/Scene.h"
 
 const float EPSILON = 1e-6f;
 
 // Initialize static members
 GLFWwindow *InputHandler::_window = nullptr;
-Camera     *InputHandler::_camera = nullptr;
+Scene      *InputHandler::_scene = nullptr;
 float       InputHandler::_lastMouseX = 0.0f;
 float       InputHandler::_lastMouseY = 0.0f;
 float       InputHandler::_mouseDeltaX = 0.0f;
 float       InputHandler::_mouseDeltaY = 0.0f;
 float       InputHandler::_scrollOffset = 0.0f;
 bool        InputHandler::_firstMouse = true;
+bool        InputHandler::_keys[1024] = {false};
 
-void InputHandler::initialize(GLFWwindow *win, Camera *cam) {
+void InputHandler::initialize(GLFWwindow *win, Scene *scene) {
     _window = win;
-    _camera = cam;
+    _scene = scene;
 
     // Set initial mouse position to center of the screen
     int width, height;
@@ -32,37 +34,60 @@ void InputHandler::initialize(GLFWwindow *win, Camera *cam) {
 }
 
 void InputHandler::processInput(float deltaTime) {
-    if (!_window || !_camera)
+    if (!_window || !_scene)
         return;
 
     // Close _window on ESCAPE key press
     if (glfwGetKey(_window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
         glfwSetWindowShouldClose(_window, true);
 
+    auto camera = _scene->getActiveCamera();
+    if (!camera)
+        return;
+
+    // Handle camera switching with keys (e.g., keys 1 and 2 for next/previous camera)
+    if (glfwGetKey(_window, GLFW_KEY_1) == GLFW_PRESS) {
+        if (!_keys[GLFW_KEY_1]) {
+            _scene->nextCamera();
+            _keys[GLFW_KEY_1] = true;
+        }
+    } else {
+        _keys[GLFW_KEY_1] = false; 
+    }
+
+    if (glfwGetKey(_window, GLFW_KEY_2) == GLFW_PRESS) {
+        if (!_keys[GLFW_KEY_2]) {
+            _scene->previousCamera();
+            _keys[GLFW_KEY_2] = true;
+        }
+    } else {
+        _keys[GLFW_KEY_2] = false;
+    }
+
     // Movement keys
     if (glfwGetKey(_window, GLFW_KEY_W) == GLFW_PRESS)
-        _camera->processKeyboard(FORWARD, deltaTime);
+        camera->processKeyboard(FORWARD, deltaTime);
     if (glfwGetKey(_window, GLFW_KEY_S) == GLFW_PRESS)
-        _camera->processKeyboard(BACKWARD, deltaTime);
+        camera->processKeyboard(BACKWARD, deltaTime);
     if (glfwGetKey(_window, GLFW_KEY_A) == GLFW_PRESS)
-        _camera->processKeyboard(LEFT, deltaTime);
+        camera->processKeyboard(LEFT, deltaTime);
     if (glfwGetKey(_window, GLFW_KEY_D) == GLFW_PRESS)
-        _camera->processKeyboard(RIGHT, deltaTime);
+        camera->processKeyboard(RIGHT, deltaTime);
     if (glfwGetKey(_window, GLFW_KEY_SPACE) == GLFW_PRESS)
-        _camera->processKeyboard(UPWARD, deltaTime);
+        camera->processKeyboard(UPWARD, deltaTime);
     if (glfwGetKey(_window, GLFW_KEY_LEFT_SHIFT) == GLFW_PRESS)
-        _camera->processKeyboard(DOWNWARD, deltaTime);
+        camera->processKeyboard(DOWNWARD, deltaTime);
 
     // Mouse movement (handled in mouseCallback)
     if (fabsf(_mouseDeltaX) > EPSILON || fabsf(_mouseDeltaY) > EPSILON) {
-        _camera->processMouseMovement(_mouseDeltaX, _mouseDeltaY);
+        camera->processMouseMovement(_mouseDeltaX, _mouseDeltaY);
         _mouseDeltaX = 0.0f;
         _mouseDeltaY = 0.0f;
     }
 
     // Scroll input (handled in scrollCallback)
     if (fabsf(_scrollOffset) > EPSILON) {
-        _camera->processMouseScroll(_scrollOffset);
+        camera->processMouseScroll(_scrollOffset);
         _scrollOffset = 0.0f;
     }
 }

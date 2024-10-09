@@ -5,7 +5,7 @@
 #include "../include/Texture.h"
 #include "../include/glad/glad.h"
 
-Scene::Scene() : activeCameraIndex(0) {
+Scene::Scene() : _activeCameraIndex(0) {
     // Constructor implementation (if needed)
 }
 
@@ -13,25 +13,42 @@ Scene::~Scene() {
     // Destructor implementation (if needed)
 }
 
-void Scene::addMesh(const std::shared_ptr<Mesh> &mesh) { meshes.push_back(mesh); }
+void Scene::addMesh(const std::shared_ptr<Mesh> &mesh) { _meshes.push_back(mesh); }
 
-void Scene::addTexture(const std::shared_ptr<Texture> &texture) { textures.push_back(texture); }
+void Scene::addTexture(const std::shared_ptr<Texture> &texture) { _textures.push_back(texture); }
 
-void Scene::addShader(const std::shared_ptr<Shader> &shader) { shaders.push_back(shader); }
+void Scene::addShader(const std::shared_ptr<Shader> &shader) { _shaders.push_back(shader); }
 
-void Scene::addCamera(const std::shared_ptr<Camera> &camera) { cameras.push_back(camera); }
+void Scene::addCamera(const std::shared_ptr<Camera> &camera) { _cameras.push_back(camera); }
 
 void Scene::setActiveCamera(size_t index) {
-    if (index < cameras.size()) {
-        activeCameraIndex = index;
+    if (index < _cameras.size()) {
+        _activeCameraIndex = index;
+    }
+}
+
+void Scene::nextCamera() {
+    if (!_cameras.empty()) {
+        _activeCameraIndex = (_activeCameraIndex + 1) % _cameras.size();
+    }
+}
+
+void Scene::previousCamera() {
+    if (!_cameras.empty()) {
+        _activeCameraIndex = (_activeCameraIndex + _cameras.size() - 1) % _cameras.size();
     }
 }
 
 std::shared_ptr<Camera> Scene::getActiveCamera() const {
-    if (cameras.empty()) {
+    if (_cameras.empty()) {
         return nullptr;
     }
-    return cameras[activeCameraIndex];
+    return _cameras[_activeCameraIndex];
+}
+
+std::vector<std::shared_ptr<Camera>>& Scene::getCameras()
+{
+    return _cameras;
 }
 
 void Scene::render() {
@@ -46,16 +63,16 @@ void Scene::render() {
     }
 
     // Render all meshes with their associated shaders and textures
-    renderMeshes();
+    _renderMeshes();
 }
 
-void Scene::renderMeshes() {
-    for (const auto &mesh : meshes) {
-        if (shaders.empty()) {
+void Scene::_renderMeshes() {
+    for (const auto &mesh : _meshes) {
+        if (_shaders.empty()) {
             continue;
         }
 
-        auto shader = shaders[0];
+        auto shader = _shaders[0];
         shader->use();
 
         // Set camera uniforms
@@ -66,8 +83,8 @@ void Scene::renderMeshes() {
         shader->setMat4("model", mesh->getModelMatrix());
 
         // Bind textures
-        for (size_t i = 0; i < textures.size(); ++i) {
-            textures[i]->bind(static_cast<unsigned int>(i));
+        for (size_t i = 0; i < _textures.size(); ++i) {
+            _textures[i]->bind(static_cast<unsigned int>(i));
             shader->setInt("texture" + std::to_string(i + 1), static_cast<int>(i));
         }
 
