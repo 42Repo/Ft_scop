@@ -1,6 +1,7 @@
 #pragma once
 
 #include <GLFW/glfw3.h>
+#include <array>
 
 class Scene;
 
@@ -33,8 +34,8 @@ class InputHandler {
     // First mouse movement flag
     static bool _firstMouse;
 
-    // Boolean flags for key presses
-    static bool _keys[1024];
+    // Boolean array to keep track of key presses
+    static std::array<bool, 1024> _keys;
 
     // Callback functionsu
     static void mouseCallback(GLFWwindow *window, double xpos, double ypos);

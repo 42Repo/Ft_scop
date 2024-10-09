@@ -5,15 +5,15 @@
 const float EPSILON = 1e-6f;
 
 // Initialize static members
-GLFWwindow *InputHandler::_window = nullptr;
-Scene      *InputHandler::_scene = nullptr;
-float       InputHandler::_lastMouseX = 0.0f;
-float       InputHandler::_lastMouseY = 0.0f;
-float       InputHandler::_mouseDeltaX = 0.0f;
-float       InputHandler::_mouseDeltaY = 0.0f;
-float       InputHandler::_scrollOffset = 0.0f;
-bool        InputHandler::_firstMouse = true;
-bool        InputHandler::_keys[1024];
+GLFWwindow            *InputHandler::_window = nullptr;
+Scene                 *InputHandler::_scene = nullptr;
+float                  InputHandler::_lastMouseX = 0.0f;
+float                  InputHandler::_lastMouseY = 0.0f;
+float                  InputHandler::_mouseDeltaX = 0.0f;
+float                  InputHandler::_mouseDeltaY = 0.0f;
+float                  InputHandler::_scrollOffset = 0.0f;
+bool                   InputHandler::_firstMouse = true;
+std::array<bool, 1024> InputHandler::_keys;
 
 void InputHandler::initialize(GLFWwindow *win, Scene *scene) {
     _window = win;
@@ -47,21 +47,21 @@ void InputHandler::processInput(float deltaTime) {
 
     // Handle camera switching with keys (e.g., keys 1 and 2 for next/previous camera)
     if (glfwGetKey(_window, GLFW_KEY_1) == GLFW_PRESS) {
-        if (!_keys[GLFW_KEY_1]) {
+        if (!_keys.at(GLFW_KEY_1)) {
             _scene->nextCamera();
-            _keys[GLFW_KEY_1] = true;
+            _keys.at(GLFW_KEY_1) = true;
         }
     } else {
-        _keys[GLFW_KEY_1] = false; 
+        _keys.at(GLFW_KEY_1) = false;
     }
 
     if (glfwGetKey(_window, GLFW_KEY_2) == GLFW_PRESS) {
-        if (!_keys[GLFW_KEY_2]) {
+        if (!_keys.at(GLFW_KEY_2)) {
             _scene->previousCamera();
-            _keys[GLFW_KEY_2] = true;
+            _keys.at(GLFW_KEY_2) = true;
         }
     } else {
-        _keys[GLFW_KEY_2] = false;
+        _keys.at(GLFW_KEY_2) = false;
     }
 
     // Movement keys
