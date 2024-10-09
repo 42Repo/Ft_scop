@@ -1,8 +1,6 @@
 #pragma once
 
-#include <glm/glm.hpp>
-#include <memory>
-#include <vector>
+#include "struct.h"
 
 // Forward declarations
 class Shader;

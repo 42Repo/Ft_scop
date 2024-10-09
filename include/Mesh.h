@@ -1,13 +1,6 @@
 #pragma once
 
-#include <glm/glm.hpp>
-#include <vector>
-
-struct Vertex {
-    glm::vec3 position;
-    glm::vec3 normal; // Optional if using lighting
-    glm::vec2 texCoords;
-};
+#include "struct.h"
 
 class Mesh {
   public:

@@ -1,7 +1,6 @@
 #pragma once
 
-#include <GLFW/glfw3.h>
-#include <array>
+#include "struct.h"
 
 class Scene;
 

@@ -1,10 +1,11 @@
-#include "include/Texture.h"
 #include "include/Camera.h"
 #include "include/InputHandler.h"
 #include "include/Mesh.h"
+#include "include/ObjLoader.h"
 #include "include/Scene.h"
 #include "include/Shader.h"
-#include "include/includes.h"
+#include "include/Texture.h"
+#include "include/struct.h"
 #include <glm/gtc/matrix_transform.hpp>
 #include <iostream>
 #include <sstream>
@@ -71,55 +72,89 @@ bool initGLAD() {
     return true;
 }
 
+std::vector<std::shared_ptr<Mesh>> loadMeshesFromObj(const std::string &filePath) {
+    ObjLoader   objLoader(filePath);              // Créer un loader et charger le fichier
+    const auto &objects = objLoader.getObjects(); // Récupérer tous les objets
+
+    std::vector<std::shared_ptr<Mesh>> meshes;
+
+    // on print toute les vertices et indices des obj
+    for (const auto &obj : objects) {
+        std::cout << "Object: " << obj.name << std::endl;
+        std::cout << "Vertices: " << std::endl;
+        for (const auto &vertex : obj.vertices) {
+            std::cout << "  Position: " << vertex.position.x << ", " << vertex.position.y << ", "
+                      << vertex.position.z << std::endl;
+            std::cout << "  Normal: " << vertex.normal.x << ", " << vertex.normal.y << ", "
+                      << vertex.normal.z << std::endl;
+            std::cout << "  TexCoords: " << vertex.texCoords.x << ", " << vertex.texCoords.y
+                      << std::endl;
+        }
+        std::cout << "Indices: " << std::endl;
+        for (const auto &index : obj.indices) {
+            std::cout << "  " << index << std::endl;
+        }
+        std::cout << std::endl;
+    }
+
+    // Parcourir les objets et créer un Mesh pour chacun
+    for (const auto &obj : objects) {
+        auto mesh = std::make_shared<Mesh>(obj.vertices, obj.indices);
+        meshes.push_back(mesh);
+    }
+
+    return meshes; // Retourner tous les Meshes chargés
+}
+
 int main() {
     // Initialize GLFW
-    std::vector<Vertex> vertices = {
-        // positions           // texture coords
-        // Front face
-        {{-0.5f, -0.5f, 0.5f}, {}, {0.0f, 0.0f}}, // bottom left
-        {{0.5f, -0.5f, 0.5f}, {}, {1.0f, 0.0f}},  // bottom right
-        {{0.5f, 0.5f, 0.5f}, {}, {1.0f, 1.0f}},   // top right
-        {{-0.5f, 0.5f, 0.5f}, {}, {0.0f, 1.0f}},  // top left
+    // std::vector<Vertex> vertices = {
+    //     // positions           // texture coords
+    //     // Front face
+    //     {{-0.5f, -0.5f, 0.5f}, {}, {0.0f, 0.0f}}, // bottom left
+    //     {{0.5f, -0.5f, 0.5f}, {}, {1.0f, 0.0f}},  // bottom right
+    //     {{0.5f, 0.5f, 0.5f}, {}, {1.0f, 1.0f}},   // top right
+    //     {{-0.5f, 0.5f, 0.5f}, {}, {0.0f, 1.0f}},  // top left
 
-        // Back face
-        {{-0.5f, -0.5f, -0.5f}, {}, {0.0f, 0.0f}}, // bottom left
-        {{0.5f, -0.5f, -0.5f}, {}, {1.0f, 0.0f}},  // bottom right
-        {{0.5f, 0.5f, -0.5f}, {}, {1.0f, 1.0f}},   // top right
-        {{-0.5f, 0.5f, -0.5f}, {}, {0.0f, 1.0f}},  // top left
+    //     // Back face
+    //     {{-0.5f, -0.5f, -0.5f}, {}, {0.0f, 0.0f}}, // bottom left
+    //     {{0.5f, -0.5f, -0.5f}, {}, {1.0f, 0.0f}},  // bottom right
+    //     {{0.5f, 0.5f, -0.5f}, {}, {1.0f, 1.0f}},   // top right
+    //     {{-0.5f, 0.5f, -0.5f}, {}, {0.0f, 1.0f}},  // top left
 
-        // Left face
-        {{-0.5f, 0.5f, 0.5f}, {}, {1.0f, 0.0f}},   // top right
-        {{-0.5f, 0.5f, -0.5f}, {}, {1.0f, 1.0f}},  // top left
-        {{-0.5f, -0.5f, -0.5f}, {}, {0.0f, 1.0f}}, // bottom left
-        {{-0.5f, -0.5f, 0.5f}, {}, {0.0f, 0.0f}},  // bottom right
+    //     // Left face
+    //     {{-0.5f, 0.5f, 0.5f}, {}, {1.0f, 0.0f}},   // top right
+    //     {{-0.5f, 0.5f, -0.5f}, {}, {1.0f, 1.0f}},  // top left
+    //     {{-0.5f, -0.5f, -0.5f}, {}, {0.0f, 1.0f}}, // bottom left
+    //     {{-0.5f, -0.5f, 0.5f}, {}, {0.0f, 0.0f}},  // bottom right
 
-        // Right face
-        {{0.5f, 0.5f, 0.5f}, {}, {1.0f, 0.0f}},   // top left
-        {{0.5f, 0.5f, -0.5f}, {}, {1.0f, 1.0f}},  // top right
-        {{0.5f, -0.5f, -0.5f}, {}, {0.0f, 1.0f}}, // bottom right
-        {{0.5f, -0.5f, 0.5f}, {}, {0.0f, 0.0f}},  // bottom left
+    //     // Right face
+    //     {{0.5f, 0.5f, 0.5f}, {}, {1.0f, 0.0f}},   // top left
+    //     {{0.5f, 0.5f, -0.5f}, {}, {1.0f, 1.0f}},  // top right
+    //     {{0.5f, -0.5f, -0.5f}, {}, {0.0f, 1.0f}}, // bottom right
+    //     {{0.5f, -0.5f, 0.5f}, {}, {0.0f, 0.0f}},  // bottom left
 
-        // Top face
-        {{-0.5f, 0.5f, -0.5f}, {}, {0.0f, 1.0f}}, // top left
-        {{0.5f, 0.5f, -0.5f}, {}, {1.0f, 1.0f}},  // top right
-        {{0.5f, 0.5f, 0.5f}, {}, {1.0f, 0.0f}},   // bottom right
-        {{-0.5f, 0.5f, 0.5f}, {}, {0.0f, 0.0f}},  // bottom left
+    //     // Top face
+    //     {{-0.5f, 0.5f, -0.5f}, {}, {0.0f, 1.0f}}, // top left
+    //     {{0.5f, 0.5f, -0.5f}, {}, {1.0f, 1.0f}},  // top right
+    //     {{0.5f, 0.5f, 0.5f}, {}, {1.0f, 0.0f}},   // bottom right
+    //     {{-0.5f, 0.5f, 0.5f}, {}, {0.0f, 0.0f}},  // bottom left
 
-        // Bottom face
-        {{-0.5f, -0.5f, -0.5f}, {}, {0.0f, 1.0f}}, // top right
-        {{0.5f, -0.5f, -0.5f}, {}, {1.0f, 1.0f}},  // top left
-        {{0.5f, -0.5f, 0.5f}, {}, {1.0f, 0.0f}},   // bottom left
-        {{-0.5f, -0.5f, 0.5f}, {}, {0.0f, 0.0f}}   // bottom right
-    };
+    //     // Bottom face
+    //     {{-0.5f, -0.5f, -0.5f}, {}, {0.0f, 1.0f}}, // top right
+    //     {{0.5f, -0.5f, -0.5f}, {}, {1.0f, 1.0f}},  // top left
+    //     {{0.5f, -0.5f, 0.5f}, {}, {1.0f, 0.0f}},   // bottom left
+    //     {{-0.5f, -0.5f, 0.5f}, {}, {0.0f, 0.0f}}   // bottom right
+    // };
 
-    std::vector<unsigned int> indices = {
-        0,  1,  2,  2,  3,  0,  // front face
-        4,  5,  6,  6,  7,  4,  // back face
-        8,  9,  10, 10, 11, 8,  // left face
-        12, 13, 14, 14, 15, 12, // right face
-        16, 17, 18, 18, 19, 16, // top face
-        20, 21, 22, 22, 23, 20  // bottom face
-    };
+    // std::vector<unsigned int> indices = {
+    //     0,  1,  2,  2,  3,  0,  // front face
+    //     4,  5,  6,  6,  7,  4,  // back face
+    //     8,  9,  10, 10, 11, 8,  // left face
+    //     12, 13, 14, 14, 15, 12, // right face
+    //     16, 17, 18, 18, 19, 16, // top face
+    //     20, 21, 22, 22, 23, 20  // bottom face
+    // };
 
     GLFWwindow *window = initGLFW();
     if (!window)
@@ -166,23 +201,42 @@ int main() {
 
         InputHandler::initialize(window, &scene);
 
-        auto cubeMesh = std::make_shared<Mesh>(vertices, indices);
-        scene.addMesh(cubeMesh);
+        // auto cubeMesh = std::make_shared<Mesh>(vertices, indices);
+        // scene.addMesh(cubeMesh);
 
-        cubeMesh->setModelMatrix(glm::mat4(1.0f)); // Identity matrix
+        // cubeMesh->setModelMatrix(glm::mat4(1.0f)); // Identity matrix
 
-        auto cubeMesh2 = std::make_shared<Mesh>(vertices, indices);
-        scene.addMesh(cubeMesh2);
+        // auto cubeMesh2 = std::make_shared<Mesh>(vertices, indices);
+        // scene.addMesh(cubeMesh2);
 
-        glm::mat4 modelMatrix2 = glm::translate(glm::mat4(1.0f), glm::vec3(2.0f, 0.0f, 0.0f));
-        cubeMesh2->setModelMatrix(modelMatrix2);
+        // glm::mat4 modelMatrix2 = glm::translate(glm::mat4(1.0f), glm::vec3(2.0f, 0.0f, 0.0f));
+        // cubeMesh2->setModelMatrix(modelMatrix2);
 
-        auto cubeMesh3 = std::make_shared<Mesh>(vertices, indices);
-        scene.addMesh(cubeMesh3);
+        try {
+            auto meshes = loadMeshesFromObj(
+                "../Models/Cube/untitled.mtl.obj"); // Charger les Meshes depuis le .obj
+            for (auto &mesh : meshes) {
+                scene.addMesh(mesh); // Ajouter chaque Mesh à la scène
+            }
+            std::cout << "Model loaded successfully: " << "../Models/Cube/untitled.mtl.obj"
+                      << std::endl;
+        } catch (const std::exception &e) {
+            std::cerr << "Failed to load the model: " << e.what() << std::endl;
+        }
 
-        glm::mat4 modelMatrix3 = glm::translate(glm::mat4(1.0f), glm::vec3(-2.0f, 0.0f, 0.0f));
-        modelMatrix3 = glm::rotate(modelMatrix3, glm::radians(45.0f), glm::vec3(0.0f, 1.0f, 0.0f));
-        cubeMesh3->setModelMatrix(modelMatrix3);
+        // auto cubeMesh3 = std::make_shared<Mesh>(vertices, indices);
+        // scene.addMesh(cubeMesh3);
+
+        // glm::mat4 modelMatrix3 = glm::translate(glm::mat4(1.0f), glm::vec3(-2.0f, 0.0f, 0.0f));
+        // modelMatrix3 = glm::rotate(modelMatrix3, glm::radians(45.0f), glm::vec3(0.0f, 1.0f,
+        // 0.0f)); cubeMesh3->setModelMatrix(modelMatrix3);
+
+        // auto Mesh4 = std::make_shared<Mesh>(vertices, indices);
+        // auto cubeMesh4 = Mesh::loadMeshObj("models/Cube/untitled.mtl.obj");
+        // scene.addMesh(cubeMesh4);
+
+        // glm::mat4 modelMatrix4 = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 0.0f, -2.0f));
+        // cubeMesh4->setModelMatrix(modelMatrix4);
 
         // Load textures
         auto texture1 = std::make_shared<Texture>("images/Untitled.png");
@@ -205,7 +259,7 @@ int main() {
             float angle = currentFrame * glm::radians(50.0f); // Rotate at 50 degrees per second
             updatedModelMatrix2 =
                 glm::rotate(updatedModelMatrix2, angle, glm::vec3(0.0f, 1.0f, 0.0f));
-            cubeMesh2->setModelMatrix(updatedModelMatrix2);
+            // cubeMesh2->setModelMatrix(updatedModelMatrix2);
 
             scene.render();
 

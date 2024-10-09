@@ -1,9 +1,7 @@
 
 #pragma once
 
-#include <glm/glm.hpp>
-#include <string>
-#include <vector>
+#include "struct.h"
 
 typedef unsigned int GLenum;
 typedef int          GLint;

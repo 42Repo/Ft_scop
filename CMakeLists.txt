@@ -42,6 +42,7 @@ set(SRCS
     src/Texture.cpp
     src/InputHandler.cpp
     src/Scene.cpp
+    src/ObjLoader.cpp
     include/add_images_lib.cpp
 )
 

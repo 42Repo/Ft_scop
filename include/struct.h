@@ -1,14 +1,34 @@
 #pragma once
 
-#include "Camera.h"
-#include "Mesh.h"
-#include "Texture.h"
-#include "stb_image.h"
+#include "glad/glad.h"
 #include <GLFW/glfw3.h>
-#include <cmath>
+#include <array>
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
+#include <iostream>
+#include <memory>
+#include <stdexcept>
+#include <string>
+#include <unordered_map>
+#include <vector>
+
+class Shader;
+class Camera;
+class Mesh;
+class Texture;
+
+struct Vertex {
+    glm::vec3 position;
+    glm::vec2 texCoords;
+    glm::vec3 normal;
+};
+
+struct ObjObject {
+    std::string               name;
+    std::vector<Vertex>       vertices;
+    std::vector<unsigned int> indices;
+};
 
 void        framebuffer_size_callback(GLFWwindow *window, int width, int height);
 GLFWwindow *initGLFW();
