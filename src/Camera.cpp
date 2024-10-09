@@ -11,7 +11,7 @@ Camera::Camera(const glm::vec3 &position, const glm::vec3 &up, float yaw, float 
       _aspectRatio(800.0f / 600.0f),
       _nearPlane(0.1f),
       _farPlane(100.0f) {
-    updateCameraVectors();
+    _updateCameraVectors();
 }
 
 glm::mat4 Camera::getViewMatrix() const { return glm::lookAt(_position, _position + _front, _up); }
@@ -52,7 +52,7 @@ void Camera::processMouseMovement(float xoffset, float yoffset, bool constrainPi
     }
 
     // Update front, right, and up vectors
-    updateCameraVectors();
+    _updateCameraVectors();
 }
 
 void Camera::processMouseScroll(float yoffset) {
@@ -75,7 +75,7 @@ void Camera::setAspectRatio(float aspectRatio) { _aspectRatio = aspectRatio; }
 
 float Camera::getAspectRatio() const { return _aspectRatio; }
 
-void Camera::updateCameraVectors() {
+void Camera::_updateCameraVectors() {
     // Calculate the new front vector
     glm::vec3 newFront;
     newFront.x = cosf(glm::radians(_yaw)) * cosf(glm::radians(_pitch));

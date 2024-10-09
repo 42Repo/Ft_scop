@@ -44,5 +44,5 @@ class Mesh {
     glm::mat4 _modelMatrix;
 
     // Initializes the buffer objects and vertex attributes
-    void setupMesh();
+    void _setupMesh();
 };

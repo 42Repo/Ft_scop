@@ -61,5 +61,5 @@ class Camera {
     float _farPlane;
 
     // Calculates the front vector from the Camera's Euler Angles
-    void updateCameraVectors();
+    void _updateCameraVectors();
 };

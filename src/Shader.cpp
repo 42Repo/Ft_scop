@@ -59,7 +59,7 @@ static std::string shaderTypeToString(GLenum shaderType) {
 }
 
 void Shader::addShaderFromFile(const std::string &filePath, GLenum shaderType) {
-    std::string shaderCode = loadShaderSource(filePath);
+    std::string shaderCode = _loadShaderSource(filePath);
     addShaderFromSource(shaderCode, shaderType);
 }
 
@@ -75,7 +75,7 @@ void Shader::addShaderFromSource(const std::string &sourceCode, GLenum shaderTyp
     // Compile shader
     glShaderSource(shader, 1, &code, nullptr);
     glCompileShader(shader);
-    checkCompileErrors(shader, shaderTypeToString(shaderType));
+    _checkCompileErrors(shader, shaderTypeToString(shaderType));
 
     // Attach shader to the program
     glAttachShader(ID, shader);
@@ -87,7 +87,7 @@ void Shader::addShaderFromSource(const std::string &sourceCode, GLenum shaderTyp
 void Shader::link() {
     // Link the shader program
     glLinkProgram(ID);
-    checkCompileErrors(ID, "PROGRAM");
+    _checkCompileErrors(ID, "PROGRAM");
 
     // Delete the shader objects after linking
     for (unsigned int shader : shaderIDs) {
@@ -146,7 +146,7 @@ void Shader::setMat4(const std::string &name, const glm::mat4 &mat) const {
     glUniformMatrix4fv(glGetUniformLocation(ID, name.c_str()), 1, GL_FALSE, &mat[0][0]);
 }
 
-void Shader::checkCompileErrors(unsigned int shader, const std::string &type) const {
+void Shader::_checkCompileErrors(unsigned int shader, const std::string &type) const {
     int  success;
     char infoLog[1024];
 
@@ -171,7 +171,7 @@ void Shader::checkCompileErrors(unsigned int shader, const std::string &type) co
     }
 }
 
-std::string Shader::loadShaderSource(const std::string &filePath) const {
+std::string Shader::_loadShaderSource(const std::string &filePath) const {
     std::ifstream shaderFile;
     shaderFile.exceptions(std::ifstream::failbit | std::ifstream::badbit);
     std::stringstream shaderStream;

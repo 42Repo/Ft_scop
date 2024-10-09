@@ -34,6 +34,6 @@ class Texture {
     GLenum       type;
 
     // Helper function to load image data
-    unsigned char *loadImage(const std::string &path, int &width, int &height, int &nrChannels,
-                             bool flip);
+    unsigned char *_loadImage(const std::string &path, int &width, int &height, int &nrChannels,
+                              bool flip);
 };

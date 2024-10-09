@@ -10,7 +10,7 @@ Texture::Texture(const std::string &path, GLenum textureType, bool flip)
 
     // Load image data
     int            width, height, nrChannels;
-    unsigned char *data = loadImage(path, width, height, nrChannels, flip);
+    unsigned char *data = _loadImage(path, width, height, nrChannels, flip);
     if (data) {
         GLenum format;
         if (nrChannels == 1)
@@ -29,7 +29,8 @@ Texture::Texture(const std::string &path, GLenum textureType, bool flip)
         glBindTexture(type, ID);
 
         // Upload image data to texture
-        glTexImage2D(type, 0, static_cast<GLint>(format), width, height, 0, format, GL_UNSIGNED_BYTE, data);
+        glTexImage2D(type, 0, static_cast<GLint>(format), width, height, 0, format,
+                     GL_UNSIGNED_BYTE, data);
 
         // Generate mipmaps
         glGenerateMipmap(type);
@@ -89,8 +90,8 @@ void Texture::setParameter(GLenum name, GLfloat *value) {
     glBindTexture(type, 0);
 }
 
-unsigned char *Texture::loadImage(const std::string &path, int &width, int &height, int &nrChannels,
-                                  bool flip) {
+unsigned char *Texture::_loadImage(const std::string &path, int &width, int &height,
+                                   int &nrChannels, bool flip) {
     stbi_set_flip_vertically_on_load(flip);
     unsigned char *data = stbi_load(path.c_str(), &width, &height, &nrChannels, 0);
     return data;

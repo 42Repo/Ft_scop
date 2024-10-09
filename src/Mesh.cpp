@@ -9,7 +9,7 @@ Mesh::Mesh(const std::vector<Vertex> &vertices, const std::vector<unsigned int> 
       _EBO(0),
       _modelMatrix(glm::mat4(1.0f)) // Initialize to identity matrix
 {
-    setupMesh();
+    _setupMesh();
 }
 
 Mesh::~Mesh() {
@@ -57,7 +57,7 @@ Mesh &Mesh::operator=(Mesh &&other) noexcept {
     return *this;
 }
 
-void Mesh::setupMesh() {
+void Mesh::_setupMesh() {
     // Generate buffers and arrays
     glGenVertexArrays(1, &_VAO);
     glGenBuffers(1, &_VBO);

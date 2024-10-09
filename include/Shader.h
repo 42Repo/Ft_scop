@@ -56,8 +56,8 @@ class Shader {
     std::vector<unsigned int> shaderIDs; // Store shader IDs for all shader stages
 
     // Utility function for checking shader compilation/linking errors
-    void checkCompileErrors(unsigned int shader, const std::string &type) const;
+    void _checkCompileErrors(unsigned int shader, const std::string &type) const;
 
     // Helper function to load shader source code from a file
-    std::string loadShaderSource(const std::string &filePath) const;
+    std::string _loadShaderSource(const std::string &filePath) const;
 };
