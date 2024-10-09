@@ -13,7 +13,7 @@ float       InputHandler::_mouseDeltaX = 0.0f;
 float       InputHandler::_mouseDeltaY = 0.0f;
 float       InputHandler::_scrollOffset = 0.0f;
 bool        InputHandler::_firstMouse = true;
-bool        InputHandler::_keys[1024] = {false};
+bool        InputHandler::_keys[1024];
 
 void InputHandler::initialize(GLFWwindow *win, Scene *scene) {
     _window = win;
@@ -29,7 +29,7 @@ void InputHandler::initialize(GLFWwindow *win, Scene *scene) {
     glfwSetCursorPosCallback(_window, mouseCallback);
     glfwSetScrollCallback(_window, scrollCallback);
 
-    // Capture the mouse
+    // Disable cursor
     glfwSetInputMode(_window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 }
 
