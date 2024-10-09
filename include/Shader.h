@@ -3,7 +3,6 @@
 
 #include <glm/glm.hpp>
 #include <string>
-#include <unordered_map>
 #include <vector>
 
 typedef unsigned int GLenum;
