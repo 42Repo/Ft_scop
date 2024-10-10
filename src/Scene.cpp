@@ -53,8 +53,9 @@ std::vector<std::shared_ptr<Camera>>& Scene::getCameras()
 
 void Scene::render() {
     // Clear screen
+    glClearColor(0.0f, 0.0f, 0.4f, 1.0f);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-    glEnable(GL_DEPTH_TEST);
+    glEnable(GL_DEPTH_TEST);    
 
     // Get the active camera's view and projection matrices
     auto camera = getActiveCamera();

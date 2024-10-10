@@ -1,8 +1,8 @@
 #include "../include/ObjLoader.h"
 #include <fstream>
 #include <iostream>
-#include <sstream>
 #include <iterator>
+#include <sstream>
 
 ObjLoader::ObjLoader(const std::string &filePath) { _parseObjFile(filePath); }
 
@@ -61,17 +61,21 @@ void ObjLoader::_startNewObject() {
 }
 
 void ObjLoader::_processFaceData(const std::vector<std::string> &data) {
+    // Store all vertex indices for the current face
+    std::vector<unsigned int> vertexIndices;
+
+    // Parse each vertex data and retrieve its index
     for (const auto &vertexData : data) {
         std::string key = vertexData;
 
-        // Chercher dans le cache pour éviter les duplications de sommets
+        // Check if the vertex is already in the cache
         if (_vertexCache.find(key) != _vertexCache.end()) {
-            _currentObject.indices.push_back(_vertexCache[key]);
+            vertexIndices.push_back(_vertexCache[key]);
         } else {
             std::istringstream vertexStream(vertexData);
             std::string        posIndexStr, texIndexStr, normIndexStr;
 
-            // Lire les indices sous les formes v, v/vt, v//vn, v/vt/vn
+            // Parse vertex indices (v, v/vt, v//vn, v/vt/vn)
             std::getline(vertexStream, posIndexStr, '/');
             std::getline(vertexStream, texIndexStr, '/');
             std::getline(vertexStream, normIndexStr, '/');
@@ -80,14 +84,28 @@ void ObjLoader::_processFaceData(const std::vector<std::string> &data) {
             int texIndex = texIndexStr.empty() ? -1 : _parseIndex(texIndexStr, _texCoords.size());
             int normIndex = normIndexStr.empty() ? -1 : _parseIndex(normIndexStr, _normals.size());
 
-            // Récupérer les données du sommet
             glm::vec3 pos = _positions[posIndex];
             glm::vec2 texCoords = texIndex != -1 ? _texCoords[texIndex] : glm::vec2(0.0f);
             glm::vec3 normal = normIndex != -1 ? _normals[normIndex] : glm::vec3(0.0f);
 
-            // Ajouter le sommet
             unsigned int newIndex = _addVertex(key, pos, normal, texCoords);
-            _currentObject.indices.push_back(newIndex);
+            _vertexCache[key] = newIndex;
+            vertexIndices.push_back(newIndex);
+        }
+    }
+
+    // Triangulate the face if it has more than 3 vertices
+    if (vertexIndices.size() == 3) {
+        // Directly add the triangle
+        _currentObject.indices.push_back(vertexIndices[0]);
+        _currentObject.indices.push_back(vertexIndices[1]);
+        _currentObject.indices.push_back(vertexIndices[2]);
+    } else if (vertexIndices.size() > 3) {
+        // Use a triangle fan method to break the polygon into triangles
+        for (size_t i = 1; i < vertexIndices.size() - 1; ++i) {
+            _currentObject.indices.push_back(vertexIndices[0]);
+            _currentObject.indices.push_back(vertexIndices[i]);
+            _currentObject.indices.push_back(vertexIndices[i + 1]);
         }
     }
 }

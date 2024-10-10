@@ -72,7 +72,7 @@ bool initGLAD() {
     return true;
 }
 
-std::vector<std::shared_ptr<Mesh>> loadMeshesFromObj(const std::string &filePath) {
+static std::vector<std::shared_ptr<Mesh>> loadMeshesFromObj(const std::string &filePath) {
     ObjLoader   objLoader(filePath);              // Créer un loader et charger le fichier
     const auto &objects = objLoader.getObjects(); // Récupérer tous les objets
 
@@ -214,11 +214,11 @@ int main() {
 
         try {
             auto meshes = loadMeshesFromObj(
-                "../Models/Cube/untitled.mtl.obj"); // Charger les Meshes depuis le .obj
+                "../Models/Lego/lego obj.obj"); // Charger les Meshes depuis le .obj
             for (auto &mesh : meshes) {
                 scene.addMesh(mesh); // Ajouter chaque Mesh à la scène
             }
-            std::cout << "Model loaded successfully: " << "../Models/Cube/untitled.mtl.obj"
+            std::cout << "Model loaded successfully: " << "../Models/Lego/lego.obj.obj"
                       << std::endl;
         } catch (const std::exception &e) {
             std::cerr << "Failed to load the model: " << e.what() << std::endl;
