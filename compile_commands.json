@@ -1,55 +1,61 @@
 [
 {
   "directory": "/home/asuc/Documents/42/ft_scop/build",
-  "command": "/usr/bin/c++  -I/home/asuc/Documents/42/ft_scop/include -Wall -Werror -Wextra -gdwarf-4 -Wunused -Wconversion -Wfloat-equal -Wnon-virtual-dtor         -Wpointer-arith -Wstrict-aliasing=2 -Wunreachable-code -Wnull-dereference         -Wnonnull -Wpedantic -Wcast-align -Wcast-qual -Wctor-dtor-privacy         -Wdisabled-optimization -Wformat=2 -Winit-self -Wmissing-declarations         -Wmissing-include-dirs -Wold-style-cast -Woverloaded-virtual         -Wredundant-decls -Wshadow -Wsign-conversion -Wsign-promo         -Wstrict-overflow=5 -Wswitch-default -Wundef -Wlogical-op -Wstrict-null-sentinel -std=gnu++20 -o CMakeFiles/Scop.dir/main.cpp.o -c /home/asuc/Documents/42/ft_scop/main.cpp",
+  "command": "/usr/bin/clang++  -I/home/asuc/Documents/42/ft_scop/include -O3 -DNDEBUG -std=gnu++20 -o CMakeFiles/Scop.dir/main.cpp.o -c /home/asuc/Documents/42/ft_scop/main.cpp",
   "file": "/home/asuc/Documents/42/ft_scop/main.cpp",
   "output": "CMakeFiles/Scop.dir/main.cpp.o"
 },
 {
   "directory": "/home/asuc/Documents/42/ft_scop/build",
-  "command": "/usr/bin/cc  -I/home/asuc/Documents/42/ft_scop/include -g -o CMakeFiles/Scop.dir/src/glad.c.o -c /home/asuc/Documents/42/ft_scop/src/glad.c",
+  "command": "/usr/bin/clang  -I/home/asuc/Documents/42/ft_scop/include -O3 -DNDEBUG -o CMakeFiles/Scop.dir/src/glad.c.o -c /home/asuc/Documents/42/ft_scop/src/glad.c",
   "file": "/home/asuc/Documents/42/ft_scop/src/glad.c",
   "output": "CMakeFiles/Scop.dir/src/glad.c.o"
 },
 {
   "directory": "/home/asuc/Documents/42/ft_scop/build",
-  "command": "/usr/bin/c++  -I/home/asuc/Documents/42/ft_scop/include -Wall -Werror -Wextra -gdwarf-4 -Wunused -Wconversion -Wfloat-equal -Wnon-virtual-dtor         -Wpointer-arith -Wstrict-aliasing=2 -Wunreachable-code -Wnull-dereference         -Wnonnull -Wpedantic -Wcast-align -Wcast-qual -Wctor-dtor-privacy         -Wdisabled-optimization -Wformat=2 -Winit-self -Wmissing-declarations         -Wmissing-include-dirs -Wold-style-cast -Woverloaded-virtual         -Wredundant-decls -Wshadow -Wsign-conversion -Wsign-promo         -Wstrict-overflow=5 -Wswitch-default -Wundef -Wlogical-op -Wstrict-null-sentinel -std=gnu++20 -o CMakeFiles/Scop.dir/src/Shader.cpp.o -c /home/asuc/Documents/42/ft_scop/src/Shader.cpp",
+  "command": "/usr/bin/clang++  -I/home/asuc/Documents/42/ft_scop/include -O3 -DNDEBUG -std=gnu++20 -o CMakeFiles/Scop.dir/src/Shader.cpp.o -c /home/asuc/Documents/42/ft_scop/src/Shader.cpp",
   "file": "/home/asuc/Documents/42/ft_scop/src/Shader.cpp",
   "output": "CMakeFiles/Scop.dir/src/Shader.cpp.o"
 },
 {
   "directory": "/home/asuc/Documents/42/ft_scop/build",
-  "command": "/usr/bin/c++  -I/home/asuc/Documents/42/ft_scop/include -Wall -Werror -Wextra -gdwarf-4 -Wunused -Wconversion -Wfloat-equal -Wnon-virtual-dtor         -Wpointer-arith -Wstrict-aliasing=2 -Wunreachable-code -Wnull-dereference         -Wnonnull -Wpedantic -Wcast-align -Wcast-qual -Wctor-dtor-privacy         -Wdisabled-optimization -Wformat=2 -Winit-self -Wmissing-declarations         -Wmissing-include-dirs -Wold-style-cast -Woverloaded-virtual         -Wredundant-decls -Wshadow -Wsign-conversion -Wsign-promo         -Wstrict-overflow=5 -Wswitch-default -Wundef -Wlogical-op -Wstrict-null-sentinel -std=gnu++20 -o CMakeFiles/Scop.dir/src/Camera.cpp.o -c /home/asuc/Documents/42/ft_scop/src/Camera.cpp",
+  "command": "/usr/bin/clang++  -I/home/asuc/Documents/42/ft_scop/include -O3 -DNDEBUG -std=gnu++20 -o CMakeFiles/Scop.dir/src/Camera.cpp.o -c /home/asuc/Documents/42/ft_scop/src/Camera.cpp",
   "file": "/home/asuc/Documents/42/ft_scop/src/Camera.cpp",
   "output": "CMakeFiles/Scop.dir/src/Camera.cpp.o"
 },
 {
   "directory": "/home/asuc/Documents/42/ft_scop/build",
-  "command": "/usr/bin/c++  -I/home/asuc/Documents/42/ft_scop/include -Wall -Werror -Wextra -gdwarf-4 -Wunused -Wconversion -Wfloat-equal -Wnon-virtual-dtor         -Wpointer-arith -Wstrict-aliasing=2 -Wunreachable-code -Wnull-dereference         -Wnonnull -Wpedantic -Wcast-align -Wcast-qual -Wctor-dtor-privacy         -Wdisabled-optimization -Wformat=2 -Winit-self -Wmissing-declarations         -Wmissing-include-dirs -Wold-style-cast -Woverloaded-virtual         -Wredundant-decls -Wshadow -Wsign-conversion -Wsign-promo         -Wstrict-overflow=5 -Wswitch-default -Wundef -Wlogical-op -Wstrict-null-sentinel -std=gnu++20 -o CMakeFiles/Scop.dir/src/Mesh.cpp.o -c /home/asuc/Documents/42/ft_scop/src/Mesh.cpp",
+  "command": "/usr/bin/clang++  -I/home/asuc/Documents/42/ft_scop/include -O3 -DNDEBUG -std=gnu++20 -o CMakeFiles/Scop.dir/src/Mesh.cpp.o -c /home/asuc/Documents/42/ft_scop/src/Mesh.cpp",
   "file": "/home/asuc/Documents/42/ft_scop/src/Mesh.cpp",
   "output": "CMakeFiles/Scop.dir/src/Mesh.cpp.o"
 },
 {
   "directory": "/home/asuc/Documents/42/ft_scop/build",
-  "command": "/usr/bin/c++  -I/home/asuc/Documents/42/ft_scop/include -Wall -Werror -Wextra -gdwarf-4 -Wunused -Wconversion -Wfloat-equal -Wnon-virtual-dtor         -Wpointer-arith -Wstrict-aliasing=2 -Wunreachable-code -Wnull-dereference         -Wnonnull -Wpedantic -Wcast-align -Wcast-qual -Wctor-dtor-privacy         -Wdisabled-optimization -Wformat=2 -Winit-self -Wmissing-declarations         -Wmissing-include-dirs -Wold-style-cast -Woverloaded-virtual         -Wredundant-decls -Wshadow -Wsign-conversion -Wsign-promo         -Wstrict-overflow=5 -Wswitch-default -Wundef -Wlogical-op -Wstrict-null-sentinel -std=gnu++20 -o CMakeFiles/Scop.dir/src/Texture.cpp.o -c /home/asuc/Documents/42/ft_scop/src/Texture.cpp",
+  "command": "/usr/bin/clang++  -I/home/asuc/Documents/42/ft_scop/include -O3 -DNDEBUG -std=gnu++20 -o CMakeFiles/Scop.dir/src/Texture.cpp.o -c /home/asuc/Documents/42/ft_scop/src/Texture.cpp",
   "file": "/home/asuc/Documents/42/ft_scop/src/Texture.cpp",
   "output": "CMakeFiles/Scop.dir/src/Texture.cpp.o"
 },
 {
   "directory": "/home/asuc/Documents/42/ft_scop/build",
-  "command": "/usr/bin/c++  -I/home/asuc/Documents/42/ft_scop/include -Wall -Werror -Wextra -gdwarf-4 -Wunused -Wconversion -Wfloat-equal -Wnon-virtual-dtor         -Wpointer-arith -Wstrict-aliasing=2 -Wunreachable-code -Wnull-dereference         -Wnonnull -Wpedantic -Wcast-align -Wcast-qual -Wctor-dtor-privacy         -Wdisabled-optimization -Wformat=2 -Winit-self -Wmissing-declarations         -Wmissing-include-dirs -Wold-style-cast -Woverloaded-virtual         -Wredundant-decls -Wshadow -Wsign-conversion -Wsign-promo         -Wstrict-overflow=5 -Wswitch-default -Wundef -Wlogical-op -Wstrict-null-sentinel -std=gnu++20 -o CMakeFiles/Scop.dir/src/InputHandler.cpp.o -c /home/asuc/Documents/42/ft_scop/src/InputHandler.cpp",
+  "command": "/usr/bin/clang++  -I/home/asuc/Documents/42/ft_scop/include -O3 -DNDEBUG -std=gnu++20 -o CMakeFiles/Scop.dir/src/InputHandler.cpp.o -c /home/asuc/Documents/42/ft_scop/src/InputHandler.cpp",
   "file": "/home/asuc/Documents/42/ft_scop/src/InputHandler.cpp",
   "output": "CMakeFiles/Scop.dir/src/InputHandler.cpp.o"
 },
 {
   "directory": "/home/asuc/Documents/42/ft_scop/build",
-  "command": "/usr/bin/c++  -I/home/asuc/Documents/42/ft_scop/include -Wall -Werror -Wextra -gdwarf-4 -Wunused -Wconversion -Wfloat-equal -Wnon-virtual-dtor         -Wpointer-arith -Wstrict-aliasing=2 -Wunreachable-code -Wnull-dereference         -Wnonnull -Wpedantic -Wcast-align -Wcast-qual -Wctor-dtor-privacy         -Wdisabled-optimization -Wformat=2 -Winit-self -Wmissing-declarations         -Wmissing-include-dirs -Wold-style-cast -Woverloaded-virtual         -Wredundant-decls -Wshadow -Wsign-conversion -Wsign-promo         -Wstrict-overflow=5 -Wswitch-default -Wundef -Wlogical-op -Wstrict-null-sentinel -std=gnu++20 -o CMakeFiles/Scop.dir/src/Scene.cpp.o -c /home/asuc/Documents/42/ft_scop/src/Scene.cpp",
+  "command": "/usr/bin/clang++  -I/home/asuc/Documents/42/ft_scop/include -O3 -DNDEBUG -std=gnu++20 -o CMakeFiles/Scop.dir/src/Scene.cpp.o -c /home/asuc/Documents/42/ft_scop/src/Scene.cpp",
   "file": "/home/asuc/Documents/42/ft_scop/src/Scene.cpp",
   "output": "CMakeFiles/Scop.dir/src/Scene.cpp.o"
 },
 {
   "directory": "/home/asuc/Documents/42/ft_scop/build",
-  "command": "/usr/bin/c++  -I/home/asuc/Documents/42/ft_scop/include -Wall -Werror -Wextra -gdwarf-4 -Wunused -Wconversion -Wfloat-equal -Wnon-virtual-dtor         -Wpointer-arith -Wstrict-aliasing=2 -Wunreachable-code -Wnull-dereference         -Wnonnull -Wpedantic -Wcast-align -Wcast-qual -Wctor-dtor-privacy         -Wdisabled-optimization -Wformat=2 -Winit-self -Wmissing-declarations         -Wmissing-include-dirs -Wold-style-cast -Woverloaded-virtual         -Wredundant-decls -Wshadow -Wsign-conversion -Wsign-promo         -Wstrict-overflow=5 -Wswitch-default -Wundef -Wlogical-op -Wstrict-null-sentinel -std=gnu++20 -Wno-error -Wno-all -Wno-cast-qual -Wno-old-style-cast -Wno-sign-conversion -Wno-conversion -Wno-switch-default -Wno-strict-overflow -Wno-everything -o CMakeFiles/Scop.dir/include/add_images_lib.cpp.o -c /home/asuc/Documents/42/ft_scop/include/add_images_lib.cpp",
+  "command": "/usr/bin/clang++  -I/home/asuc/Documents/42/ft_scop/include -O3 -DNDEBUG -std=gnu++20 -o CMakeFiles/Scop.dir/src/ObjLoader.cpp.o -c /home/asuc/Documents/42/ft_scop/src/ObjLoader.cpp",
+  "file": "/home/asuc/Documents/42/ft_scop/src/ObjLoader.cpp",
+  "output": "CMakeFiles/Scop.dir/src/ObjLoader.cpp.o"
+},
+{
+  "directory": "/home/asuc/Documents/42/ft_scop/build",
+  "command": "/usr/bin/clang++  -I/home/asuc/Documents/42/ft_scop/include -O3 -DNDEBUG -std=gnu++20 -Wno-error -Wno-all -Wno-cast-qual -Wno-old-style-cast -Wno-sign-conversion -Wno-conversion -Wno-switch-default -Wno-strict-overflow -Wno-everything -o CMakeFiles/Scop.dir/include/add_images_lib.cpp.o -c /home/asuc/Documents/42/ft_scop/include/add_images_lib.cpp",
   "file": "/home/asuc/Documents/42/ft_scop/include/add_images_lib.cpp",
   "output": "CMakeFiles/Scop.dir/include/add_images_lib.cpp.o"
 }
