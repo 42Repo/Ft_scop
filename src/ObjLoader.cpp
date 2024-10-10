@@ -20,8 +20,6 @@ void ObjLoader::_parseObjFile(const std::string &filePath) {
         lineStream >> prefix;
 
         if (prefix == "v") {
-            // Si on trouve une nouvelle série de sommets après des faces, on démarre un nouvel
-            // objet.
             if (!_currentObject.indices.empty()) {
                 _startNewObject();
             }
@@ -44,7 +42,6 @@ void ObjLoader::_parseObjFile(const std::string &filePath) {
         }
     }
 
-    // Ajouter le dernier objet si non vide
     if (!_currentObject.vertices.empty() || !_currentObject.indices.empty()) {
         _objects.push_back(_currentObject);
     }
@@ -56,19 +53,16 @@ void ObjLoader::_startNewObject() {
     if (!_currentObject.vertices.empty() || !_currentObject.indices.empty()) {
         _objects.push_back(_currentObject);
     }
-    _currentObject = ObjObject(); // Réinitialiser l'objet courant
-    _vertexCache.clear();         // Vider le cache pour les nouveaux sommets
+    _currentObject = ObjObject();
+    _vertexCache.clear();
 }
 
 void ObjLoader::_processFaceData(const std::vector<std::string> &data) {
-    // Store all vertex indices for the current face
     std::vector<unsigned int> vertexIndices;
 
-    // Parse each vertex data and retrieve its index
     for (const auto &vertexData : data) {
         std::string key = vertexData;
 
-        // Check if the vertex is already in the cache
         if (_vertexCache.find(key) != _vertexCache.end()) {
             vertexIndices.push_back(_vertexCache[key]);
         } else {
@@ -80,13 +74,23 @@ void ObjLoader::_processFaceData(const std::vector<std::string> &data) {
             std::getline(vertexStream, texIndexStr, '/');
             std::getline(vertexStream, normIndexStr, '/');
 
-            int posIndex = _parseIndex(posIndexStr, _positions.size());
-            int texIndex = texIndexStr.empty() ? -1 : _parseIndex(texIndexStr, _texCoords.size());
-            int normIndex = normIndexStr.empty() ? -1 : _parseIndex(normIndexStr, _normals.size());
+            unsigned int posIndex =
+                static_cast<unsigned int>(_parseIndex(posIndexStr, _positions.size()));
+            unsigned int texIndex =
+                texIndexStr.empty()
+                    ? static_cast<unsigned int>(-1)
+                    : static_cast<unsigned int>(_parseIndex(texIndexStr, _texCoords.size()));
+            unsigned int normIndex =
+                normIndexStr.empty()
+                    ? static_cast<unsigned int>(-1)
+                    : static_cast<unsigned int>(_parseIndex(normIndexStr, _normals.size()));
 
-            glm::vec3 pos = _positions[posIndex];
-            glm::vec2 texCoords = texIndex != -1 ? _texCoords[texIndex] : glm::vec2(0.0f);
-            glm::vec3 normal = normIndex != -1 ? _normals[normIndex] : glm::vec3(0.0f);
+            glm::vec3 pos = _positions.at(posIndex);
+            glm::vec2 texCoords = texIndex != static_cast<unsigned int>(-1)
+                                      ? _texCoords.at(texIndex)
+                                      : glm::vec2(0.0f);
+            glm::vec3 normal = normIndex != static_cast<unsigned int>(-1) ? _normals.at(normIndex)
+                                                                          : glm::vec3(0.0f);
 
             unsigned int newIndex = _addVertex(key, pos, normal, texCoords);
             _vertexCache[key] = newIndex;
@@ -96,12 +100,10 @@ void ObjLoader::_processFaceData(const std::vector<std::string> &data) {
 
     // Triangulate the face if it has more than 3 vertices
     if (vertexIndices.size() == 3) {
-        // Directly add the triangle
         _currentObject.indices.push_back(vertexIndices[0]);
         _currentObject.indices.push_back(vertexIndices[1]);
         _currentObject.indices.push_back(vertexIndices[2]);
     } else if (vertexIndices.size() > 3) {
-        // Use a triangle fan method to break the polygon into triangles
         for (size_t i = 1; i < vertexIndices.size() - 1; ++i) {
             _currentObject.indices.push_back(vertexIndices[0]);
             _currentObject.indices.push_back(vertexIndices[i]);
@@ -110,10 +112,10 @@ void ObjLoader::_processFaceData(const std::vector<std::string> &data) {
     }
 }
 
-unsigned int ObjLoader::_parseIndex(const std::string &index, int size) const {
+unsigned int ObjLoader::_parseIndex(const std::string &index, size_t size) const {
     int idx = std::stoi(index);
     if (idx < 0)
-        idx += size;
+        idx += static_cast<int>(size);
     else
         idx -= 1;
     return static_cast<unsigned int>(idx);

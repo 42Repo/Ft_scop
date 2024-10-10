@@ -19,7 +19,7 @@ class ObjLoader {
     void         _parseObjFile(const std::string &filePath);
     void         _startNewObject();
     void         _processFaceData(const std::vector<std::string> &data);
-    unsigned int _parseIndex(const std::string &index, int size) const;
+    unsigned int _parseIndex(const std::string &index, size_t size) const;
     unsigned int _addVertex(const std::string &key, const glm::vec3 &pos, const glm::vec3 &normal,
                             const glm::vec2 &texCoords);
 
