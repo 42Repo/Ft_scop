@@ -108,3 +108,7 @@ void Mesh::draw() const {
 void Mesh::setModelMatrix(const glm::mat4 &modelMatrix) { _modelMatrix = modelMatrix; }
 
 const glm::mat4 &Mesh::getModelMatrix() const { return _modelMatrix; }
+
+void Mesh::setMaterial(const Material &material) { _material = material; }
+
+const Material &Mesh::getMaterial() const { return _material; }

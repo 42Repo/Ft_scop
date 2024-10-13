@@ -73,34 +73,21 @@ bool initGLAD() {
 }
 
 static std::vector<std::shared_ptr<Mesh>> loadMeshesFromObj(const std::string &filePath) {
-    ObjLoader   objLoader(filePath);              // Créer un loader et charger le fichier
-    const auto &objects = objLoader.getObjects(); // Récupérer tous les objets
+    ObjLoader objLoader(filePath);            // Créer un loader et charger le fichier
+    auto      meshes = objLoader.getMeshes(); // Récupérer les maillages
 
-    std::vector<std::shared_ptr<Mesh>> meshes;
-
-    // for (const auto &obj : objects) {
-    //     std::cout << "Object: " << obj.name << std::endl;
-    //     std::cout << "Vertices: " << std::endl;
-    //     for (const auto &vertex : obj.vertices) {
-    //         std::cout << "  Position: " << vertex.position.x << ", " << vertex.position.y << ", "
-    //                   << vertex.position.z << std::endl;
-    //         std::cout << "  Normal: " << vertex.normal.x << ", " << vertex.normal.y << ", "
-    //                   << vertex.normal.z << std::endl;
-    //         std::cout << "  TexCoords: " << vertex.texCoords.x << ", " << vertex.texCoords.y
-    //                   << std::endl;
-    //     }
-    //     // std::cout << "Indices: " << std::endl;
-    //     // for (const auto &index : obj.indices) {
-    //     //     std::cout << "  " << index << std::endl;
-    //     // }
-    //     std::cout << std::endl;
-    // }
-
-    for (const auto &obj : objects) {
-        auto mesh = std::make_shared<Mesh>(obj.vertices, obj.indices);
-        meshes.push_back(mesh);
+    // on print tout ce qu'il y a dans le fichier obj
+    for (const auto &object : objLoader.getObjects()) {
+        std::cout << "Object: " << object.name << std::endl;
+        for (const auto &subMesh : object.subMeshes) {
+            std::cout << "  SubMesh: " << subMesh.materialName << std::endl;
+            std::cout << "    Indices: ";
+            for (unsigned int index : subMesh.indices) {
+                std::cout << index << " ";
+            }
+            std::cout << std::endl;
+        }
     }
-
     return meshes;
 }
 
@@ -151,7 +138,7 @@ int main() {
 
         InputHandler::initialize(window, &scene);
 
-        std::string files = "Models/BugattiV2/untitled.obj";
+        std::string files = "Models/Cube/untitled.mtl.obj";
         try {
             auto meshes = loadMeshesFromObj(files);
             for (auto &mesh : meshes) {
@@ -168,6 +155,9 @@ int main() {
         scene.addTexture(texture1);
         scene.addTexture(texture2);
 
+        // Disable VSync
+        glfwSwapInterval(0);
+
         // Render loop
         while (!glfwWindowShouldClose(window)) {
 
@@ -181,6 +171,7 @@ int main() {
             scene.render();
 
             fps_counter(window);
+
             // Swap buffers and poll events
             glfwSwapBuffers(window);
             glfwPollEvents();

@@ -24,10 +24,25 @@ struct Vertex {
     glm::vec3 normal;
 };
 
-struct ObjObject {
-    std::string               name;
-    std::vector<Vertex>       vertices;
+struct SubMesh {
     std::vector<unsigned int> indices;
+    std::string               materialName;
+};
+
+struct ObjObject {
+    std::string          name;
+    std::vector<Vertex>  vertices;
+    std::vector<SubMesh> subMeshes;
+};
+
+struct Material {
+    std::string                      name;
+    glm::vec3                        ambient = glm::vec3(0.0f);
+    glm::vec3                        diffuse = glm::vec3(0.0f);
+    glm::vec3                        specular = glm::vec3(0.0f);
+    float                            shininess = 32.0f;
+    std::string                      diffuseMapPath;
+    mutable std::shared_ptr<Texture> diffuseTexture;
 };
 
 void        framebuffer_size_callback(GLFWwindow *window, int width, int height);

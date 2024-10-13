@@ -46,16 +46,13 @@ std::shared_ptr<Camera> Scene::getActiveCamera() const {
     return _cameras[_activeCameraIndex];
 }
 
-std::vector<std::shared_ptr<Camera>>& Scene::getCameras()
-{
-    return _cameras;
-}
+std::vector<std::shared_ptr<Camera>> &Scene::getCameras() { return _cameras; }
 
 void Scene::render() {
     // Clear screen
     glClearColor(0.0f, 0.0f, 0.4f, 1.0f);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-    glEnable(GL_DEPTH_TEST);    
+    glEnable(GL_DEPTH_TEST);
 
     // Get the active camera's view and projection matrices
     auto camera = getActiveCamera();
@@ -83,13 +80,20 @@ void Scene::_renderMeshes() {
         // **Set the mesh's model matrix**
         shader->setMat4("model", mesh->getModelMatrix());
 
-        // Bind textures
-        for (size_t i = 0; i < _textures.size(); ++i) {
-            _textures[i]->bind(static_cast<unsigned int>(i));
-            shader->setInt("texture" + std::to_string(i + 1), static_cast<int>(i));
+        const Material &material = mesh->getMaterial();
+        shader->setVec3("material.ambient", material.ambient);
+        shader->setVec3("material.diffuse", material.diffuse);
+        shader->setVec3("material.specular", material.specular);
+        shader->setFloat("material.shininess", material.shininess);
+
+        if (!material.diffuseMapPath.empty()) {
+            if (!material.diffuseTexture) {
+                material.diffuseTexture = std::make_shared<Texture>(material.diffuseMapPath);
+            }
+            material.diffuseTexture->bind(0);
+            shader->setInt("material.diffuseMap", 0);
         }
 
-        // Draw the mesh
         mesh->draw();
     }
 }

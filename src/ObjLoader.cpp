@@ -1,10 +1,33 @@
 #include "../include/ObjLoader.h"
+#include "../include/Mesh.h"
 #include <fstream>
 #include <iostream>
 #include <iterator>
 #include <sstream>
 
 ObjLoader::ObjLoader(const std::string &filePath) { _parseObjFile(filePath); }
+
+static std::string getParentPath(const std::string &path) {
+    size_t pos = path.find_last_of("/\\");
+    if (pos == std::string::npos) {
+        return "";
+    }
+    return path.substr(0, pos);
+}
+
+static std::string combinePaths(const std::string &path1, const std::string &path2) {
+    if (path1.empty()) {
+        return path2;
+    }
+    char lastChar = path1[path1.size() - 1];
+    if (lastChar != '/' && lastChar != '\\') {
+        return path1 + "/" + path2;
+    } else {
+        return path1 + path2;
+    }
+}
+
+const std::vector<ObjObject> &ObjLoader::getObjects() const { return _objects; }
 
 void ObjLoader::_parseObjFile(const std::string &filePath) {
     std::ifstream file(filePath);
@@ -20,10 +43,6 @@ void ObjLoader::_parseObjFile(const std::string &filePath) {
         lineStream >> prefix;
 
         if (prefix == "v") {
-            if (!_currentObject.indices.empty()) {
-                _startNewObject();
-            }
-
             glm::vec3 position;
             lineStream >> position.x >> position.y >> position.z;
             _positions.push_back(position);
@@ -39,10 +58,24 @@ void ObjLoader::_parseObjFile(const std::string &filePath) {
             std::vector<std::string> faceData{std::istream_iterator<std::string>{lineStream},
                                               std::istream_iterator<std::string>{}};
             _processFaceData(faceData);
+        } else if (prefix == "mtllib") {
+            std::string mtllibFilename;
+            lineStream >> mtllibFilename;
+            _loadMaterialFile(filePath, mtllibFilename);
+        } else if (prefix == "usemtl") {
+            if (!_currentSubMesh.indices.empty()) {
+                _currentObject.subMeshes.push_back(_currentSubMesh);
+                _currentSubMesh = SubMesh();
+            }
+            lineStream >> _currentMaterialName;
+            _currentSubMesh.materialName = _currentMaterialName;
         }
     }
 
-    if (!_currentObject.vertices.empty() || !_currentObject.indices.empty()) {
+    if (!_currentSubMesh.indices.empty()) {
+        _currentObject.subMeshes.push_back(_currentSubMesh);
+    }
+    if (!_currentObject.subMeshes.empty()) {
         _objects.push_back(_currentObject);
     }
 
@@ -50,7 +83,11 @@ void ObjLoader::_parseObjFile(const std::string &filePath) {
 }
 
 void ObjLoader::_startNewObject() {
-    if (!_currentObject.vertices.empty() || !_currentObject.indices.empty()) {
+    if (!_currentSubMesh.indices.empty()) {
+        _currentObject.subMeshes.push_back(_currentSubMesh);
+        _currentSubMesh = SubMesh();
+    }
+    if (!_currentObject.subMeshes.empty()) {
         _objects.push_back(_currentObject);
     }
     _currentObject = ObjObject();
@@ -63,27 +100,24 @@ void ObjLoader::_processFaceData(const std::vector<std::string> &data) {
     for (const auto &vertexData : data) {
         std::string key = vertexData;
 
+        unsigned int newIndex;
         if (_vertexCache.find(key) != _vertexCache.end()) {
-            vertexIndices.push_back(_vertexCache[key]);
+            newIndex = _vertexCache[key];
         } else {
             std::istringstream vertexStream(vertexData);
             std::string        posIndexStr, texIndexStr, normIndexStr;
 
-            // Parse vertex indices (v, v/vt, v//vn, v/vt/vn)
             std::getline(vertexStream, posIndexStr, '/');
             std::getline(vertexStream, texIndexStr, '/');
             std::getline(vertexStream, normIndexStr, '/');
 
-            unsigned int posIndex =
-                static_cast<unsigned int>(_parseIndex(posIndexStr, _positions.size()));
-            unsigned int texIndex =
-                texIndexStr.empty()
-                    ? static_cast<unsigned int>(-1)
-                    : static_cast<unsigned int>(_parseIndex(texIndexStr, _texCoords.size()));
-            unsigned int normIndex =
-                normIndexStr.empty()
-                    ? static_cast<unsigned int>(-1)
-                    : static_cast<unsigned int>(_parseIndex(normIndexStr, _normals.size()));
+            unsigned int posIndex = _parseIndex(posIndexStr, _positions.size());
+            unsigned int texIndex = texIndexStr.empty()
+                                        ? static_cast<unsigned int>(-1)
+                                        : _parseIndex(texIndexStr, _texCoords.size());
+            unsigned int normIndex = normIndexStr.empty()
+                                         ? static_cast<unsigned int>(-1)
+                                         : _parseIndex(normIndexStr, _normals.size());
 
             glm::vec3 pos = _positions.at(posIndex);
             glm::vec2 texCoords = texIndex != static_cast<unsigned int>(-1)
@@ -92,22 +126,18 @@ void ObjLoader::_processFaceData(const std::vector<std::string> &data) {
             glm::vec3 normal = normIndex != static_cast<unsigned int>(-1) ? _normals.at(normIndex)
                                                                           : glm::vec3(0.0f);
 
-            unsigned int newIndex = _addVertex(key, pos, normal, texCoords);
+            newIndex = _addVertex(key, pos, normal, texCoords);
             _vertexCache[key] = newIndex;
-            vertexIndices.push_back(newIndex);
         }
+        vertexIndices.push_back(newIndex);
     }
 
     // Triangulate the face if it has more than 3 vertices
-    if (vertexIndices.size() == 3) {
-        _currentObject.indices.push_back(vertexIndices[0]);
-        _currentObject.indices.push_back(vertexIndices[1]);
-        _currentObject.indices.push_back(vertexIndices[2]);
-    } else if (vertexIndices.size() > 3) {
+    if (vertexIndices.size() >= 3) {
         for (size_t i = 1; i < vertexIndices.size() - 1; ++i) {
-            _currentObject.indices.push_back(vertexIndices[0]);
-            _currentObject.indices.push_back(vertexIndices[i]);
-            _currentObject.indices.push_back(vertexIndices[i + 1]);
+            _currentSubMesh.indices.push_back(vertexIndices[0]);
+            _currentSubMesh.indices.push_back(vertexIndices[i]);
+            _currentSubMesh.indices.push_back(vertexIndices[i + 1]);
         }
     }
 }
@@ -130,4 +160,73 @@ unsigned int ObjLoader::_addVertex(const std::string &key, const glm::vec3 &pos,
     return index;
 }
 
-const std::vector<ObjObject> &ObjLoader::getObjects() const { return _objects; }
+void ObjLoader::_loadMaterialFile(const std::string &objFilePath,
+                                  const std::string &mtllibFilename) {
+    // Construire le chemin complet vers le fichier .mtl
+    std::string objParentPath = getParentPath(objFilePath);
+    std::string mtlFilePath = combinePaths(objParentPath, mtllibFilename);
+
+    std::ifstream mtlFile(mtlFilePath.c_str());
+    if (!mtlFile.is_open()) {
+        std::cerr << "Erreur: impossible d'ouvrir le fichier de matériau: " << mtlFilePath
+                  << std::endl;
+        return;
+    }
+
+    std::string line;
+    std::string currentMaterialName;
+    Material    currentMaterial;
+
+    while (std::getline(mtlFile, line)) {
+        std::istringstream lineStream(line);
+        std::string        prefix;
+        lineStream >> prefix;
+
+        if (prefix == "newmtl") {
+            if (!currentMaterialName.empty()) {
+                _materials[currentMaterialName] = currentMaterial;
+            }
+            lineStream >> currentMaterialName;
+            currentMaterial = Material();
+            currentMaterial.name = currentMaterialName;
+        } else if (prefix == "Ka") {
+            lineStream >> currentMaterial.ambient.r >> currentMaterial.ambient.g >>
+                currentMaterial.ambient.b;
+        } else if (prefix == "Kd") {
+            lineStream >> currentMaterial.diffuse.r >> currentMaterial.diffuse.g >>
+                currentMaterial.diffuse.b;
+        } else if (prefix == "Ks") {
+            lineStream >> currentMaterial.specular.r >> currentMaterial.specular.g >>
+                currentMaterial.specular.b;
+        } else if (prefix == "Ns") {
+            lineStream >> currentMaterial.shininess;
+        } else if (prefix == "map_Kd") {
+            lineStream >> currentMaterial.diffuseMapPath;
+            std::string mtlParentPath = getParentPath(mtlFilePath);
+            std::string texturePath = combinePaths(mtlParentPath, currentMaterial.diffuseMapPath);
+            currentMaterial.diffuseMapPath = texturePath;
+        }
+    }
+    if (!currentMaterialName.empty()) {
+        _materials[currentMaterialName] = currentMaterial;
+    }
+
+    mtlFile.close();
+}
+
+std::vector<std::shared_ptr<Mesh>> ObjLoader::getMeshes() const {
+    std::vector<std::shared_ptr<Mesh>> meshes;
+    for (const auto &object : _objects) {
+        const auto &vertices = object.vertices;
+        for (const auto &subMesh : object.subMeshes) {
+            std::shared_ptr<Mesh> mesh = std::make_shared<Mesh>(vertices, subMesh.indices);
+
+            auto it = _materials.find(subMesh.materialName);
+            if (it != _materials.end()) {
+                mesh->setMaterial(it->second);
+            }
+            meshes.push_back(mesh);
+        }
+    }
+    return meshes;
+}

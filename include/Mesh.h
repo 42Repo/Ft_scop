@@ -24,11 +24,14 @@ class Mesh {
     // **Model matrix methods**
     void             setModelMatrix(const glm::mat4 &modelMatrix);
     const glm::mat4 &getModelMatrix() const;
+    void             setMaterial(const Material &material);
+    const Material  &getMaterial() const;
 
   private:
     // Mesh Data
     std::vector<Vertex>       _vertices;
     std::vector<unsigned int> _indices;
+    Material                  _material;
 
     // OpenGL buffers
     unsigned int _VAO, _VBO, _EBO;

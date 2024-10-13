@@ -4,7 +4,7 @@ project(Scop)
 
 message ("${CMAKE_BUILD_TYPE}")
 
-set(CMAKE_CXX_STANDARD 20)
+set(CMAKE_CXX_STANDARD 11)
 set(CMAKE_CXX_STANDARD_REQUIRED True)
 cmake_policy(SET CMP0072 NEW)
 
@@ -23,7 +23,7 @@ if(CMAKE_BUILD_TYPE STREQUAL "Debug")
         -Wdisabled-optimization -Wformat=2 -Winit-self -Wmissing-declarations \
         -Wmissing-include-dirs -Wold-style-cast -Woverloaded-virtual \
         -Wredundant-decls -Wshadow -Wsign-conversion -Wsign-promo \
-        -Wstrict-overflow=5 -Wswitch-default -Wundef")
+        -Wstrict-overflow=5 -Wswitch-default -Wundef -o3")
     
     if(CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
         set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -Weverything -Wno-reserved-macro-identifier -Wno-reserved-identifier -Wno-c++98-compat -Wno-cast-function-type-strict -Wno-padded")
