@@ -90,6 +90,14 @@ void InputHandler::processInput(float deltaTime) {
         camera->processMouseScroll(_scrollOffset);
         _scrollOffset = 0.0f;
     }
+
+    // if numkey 1 is press switch to wireframe mode
+    if (glfwGetKey(_window, GLFW_KEY_1) == GLFW_PRESS) {
+        glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+    }
+    if (glfwGetKey(_window, GLFW_KEY_2) == GLFW_PRESS) {
+        glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+    }
 }
 
 void InputHandler::mouseCallback(GLFWwindow *window, double xpos, double ypos) {

@@ -78,23 +78,23 @@ static std::vector<std::shared_ptr<Mesh>> loadMeshesFromObj(const std::string &f
 
     std::vector<std::shared_ptr<Mesh>> meshes;
 
-    for (const auto &obj : objects) {
-        std::cout << "Object: " << obj.name << std::endl;
-        std::cout << "Vertices: " << std::endl;
-        for (const auto &vertex : obj.vertices) {
-            std::cout << "  Position: " << vertex.position.x << ", " << vertex.position.y << ", "
-                      << vertex.position.z << std::endl;
-            std::cout << "  Normal: " << vertex.normal.x << ", " << vertex.normal.y << ", "
-                      << vertex.normal.z << std::endl;
-            std::cout << "  TexCoords: " << vertex.texCoords.x << ", " << vertex.texCoords.y
-                      << std::endl;
-        }
-        // std::cout << "Indices: " << std::endl;
-        // for (const auto &index : obj.indices) {
-        //     std::cout << "  " << index << std::endl;
-        // }
-        std::cout << std::endl;
-    }
+    // for (const auto &obj : objects) {
+    //     std::cout << "Object: " << obj.name << std::endl;
+    //     std::cout << "Vertices: " << std::endl;
+    //     for (const auto &vertex : obj.vertices) {
+    //         std::cout << "  Position: " << vertex.position.x << ", " << vertex.position.y << ", "
+    //                   << vertex.position.z << std::endl;
+    //         std::cout << "  Normal: " << vertex.normal.x << ", " << vertex.normal.y << ", "
+    //                   << vertex.normal.z << std::endl;
+    //         std::cout << "  TexCoords: " << vertex.texCoords.x << ", " << vertex.texCoords.y
+    //                   << std::endl;
+    //     }
+    //     // std::cout << "Indices: " << std::endl;
+    //     // for (const auto &index : obj.indices) {
+    //     //     std::cout << "  " << index << std::endl;
+    //     // }
+    //     std::cout << std::endl;
+    // }
 
     for (const auto &obj : objects) {
         auto mesh = std::make_shared<Mesh>(obj.vertices, obj.indices);
@@ -151,12 +151,13 @@ int main() {
 
         InputHandler::initialize(window, &scene);
 
+        std::string files = "Models/BugattiV2/untitled.obj";
         try {
-            auto meshes = loadMeshesFromObj("Models/Teapot/teapot.obj");
+            auto meshes = loadMeshesFromObj(files);
             for (auto &mesh : meshes) {
                 scene.addMesh(mesh);
             }
-            std::cout << "Model loaded successfully: " << "Models/Lego/lego.obj.obj" << std::endl;
+            std::cout << "Model loaded successfully: " << files << std::endl;
         } catch (const std::exception &e) {
             std::cerr << "Failed to load the model: " << e.what() << std::endl;
         }
