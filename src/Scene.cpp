@@ -80,12 +80,14 @@ void Scene::_renderMeshes() {
         // **Set the mesh's model matrix**
         shader->setMat4("model", mesh->getModelMatrix());
 
+        // Set material uniforms
         const Material &material = mesh->getMaterial();
         shader->setVec3("material.ambient", material.ambient);
         shader->setVec3("material.diffuse", material.diffuse);
         shader->setVec3("material.specular", material.specular);
         shader->setFloat("material.shininess", material.shininess);
 
+        // Bind textures
         if (!material.diffuseMapPath.empty()) {
             if (!material.diffuseTexture) {
                 material.diffuseTexture = std::make_shared<Texture>(material.diffuseMapPath);

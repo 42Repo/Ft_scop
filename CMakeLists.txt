@@ -12,12 +12,14 @@ file(COPY ${CMAKE_SOURCE_DIR}/shaders DESTINATION ${CMAKE_BINARY_DIR})
 file(COPY ${CMAKE_SOURCE_DIR}/images DESTINATION ${CMAKE_BINARY_DIR})
 file(COPY ${CMAKE_SOURCE_DIR}/Models DESTINATION ${CMAKE_BINARY_DIR})
 
+set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -gdwarf-4")
+
 if(NOT CMAKE_BUILD_TYPE)
     set(CMAKE_BUILD_TYPE "Release" CACHE STRING "Build type (default: Release)" FORCE)
 endif()
 
 if(CMAKE_BUILD_TYPE STREQUAL "Debug")
-    set(CMAKE_CXX_FLAGS_DEBUG "-Wall -Werror -Wextra -g -gdwarf-4 -Wunused -Wconversion -Wfloat-equal -Wnon-virtual-dtor \
+    set(CMAKE_CXX_FLAGS_DEBUG "-Wall -Werror -Wextra -gdwarf-4 -Wunused -Wconversion -Wfloat-equal -Wnon-virtual-dtor \
         -Wpointer-arith -Wstrict-aliasing=2 -Wunreachable-code -Wnull-dereference \
         -Wnonnull -Wpedantic -Wcast-align -Wcast-qual -Wctor-dtor-privacy \
         -Wdisabled-optimization -Wformat=2 -Winit-self -Wmissing-declarations \
