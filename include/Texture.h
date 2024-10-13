@@ -4,10 +4,7 @@
 
 class Texture {
   public:
-    // Constructor: Loads texture from file
     Texture(const std::string &path, GLenum textureType = GL_TEXTURE_2D, bool flip = true);
-
-    // Destructor
     ~Texture();
 
     // Delete copy constructor and copy assignment operator
@@ -25,14 +22,12 @@ class Texture {
     void setParameter(GLenum name, GLint value);
     void setParameter(GLenum name, GLfloat *value);
 
-    // Get the texture ID
     unsigned int getID() const { return ID; }
 
   private:
     unsigned int ID;
     GLenum       type;
 
-    // Helper function to load image data
     unsigned char *_loadImage(const std::string &path, int &width, int &height, int &nrChannels,
                               bool flip);
 };

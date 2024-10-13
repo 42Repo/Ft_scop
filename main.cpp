@@ -73,21 +73,62 @@ bool initGLAD() {
 }
 
 static std::vector<std::shared_ptr<Mesh>> loadMeshesFromObj(const std::string &filePath) {
-    ObjLoader objLoader(filePath);            // Créer un loader et charger le fichier
-    auto      meshes = objLoader.getMeshes(); // Récupérer les maillages
+    ObjLoader objLoader(filePath);
+    auto      meshes = objLoader.getMeshes();
 
-    // on print tout ce qu'il y a dans le fichier obj
-    for (const auto &object : objLoader.getObjects()) {
-        std::cout << "Object: " << object.name << std::endl;
-        for (const auto &subMesh : object.subMeshes) {
-            std::cout << "  SubMesh: " << subMesh.materialName << std::endl;
-            std::cout << "    Indices: ";
-            for (unsigned int index : subMesh.indices) {
-                std::cout << index << " ";
-            }
-            std::cout << std::endl;
+    int meshIndex = 0;
+    for (const auto &meshPtr : meshes) {
+        std::cout << "Mesh #" << meshIndex << std::endl;
+
+        const auto &vertices = meshPtr->getVertices();
+        const auto &indices = meshPtr->getIndices();
+        const auto &material = meshPtr->getMaterial();
+
+        if (material.name.empty()) {
+            std::cout << "  Material: (No material assigned)" << std::endl;
+        } else {
+            std::cout << "  Material Name: " << material.name << std::endl;
+            std::cout << "    Ambient: (" << material.ambient.r << ", " << material.ambient.g
+                      << ", " << material.ambient.b << ")" << std::endl;
+            std::cout << "    Diffuse: (" << material.diffuse.r << ", " << material.diffuse.g
+                      << ", " << material.diffuse.b << ")" << std::endl;
+            std::cout << "    Specular: (" << material.specular.r << ", " << material.specular.g
+                      << ", " << material.specular.b << ")" << std::endl;
+            std::cout << "    Shininess: " << material.shininess << std::endl;
+            std::cout << "    Diffuse Map Path: " << material.diffuseMapPath << std::endl;
         }
+
+        std::cout << "  Number of Vertices: " << vertices.size() << std::endl;
+        std::cout << "  Number of Indices: " << indices.size() << std::endl;
+
+        size_t maxVerticesToShow = std::min(vertices.size(), static_cast<size_t>(5));
+        for (size_t i = 0; i < maxVerticesToShow; ++i) {
+            const auto &vertex = vertices[i];
+            std::cout << "    Vertex " << i << ": Position(" << vertex.position.x << ", "
+                      << vertex.position.y << ", " << vertex.position.z << "), "
+                      << "Normal(" << vertex.normal.x << ", " << vertex.normal.y << ", "
+                      << vertex.normal.z << "), "
+                      << "TexCoords(" << vertex.texCoords.x << ", " << vertex.texCoords.y << ")"
+                      << std::endl;
+        }
+        if (vertices.size() > maxVerticesToShow) {
+            std::cout << "    ... (" << vertices.size() - maxVerticesToShow << " more vertices)"
+                      << std::endl;
+        }
+
+        size_t maxTrianglesToShow = std::min(indices.size() / 3, static_cast<size_t>(5));
+        for (size_t i = 0; i < maxTrianglesToShow * 3; i += 3) {
+            std::cout << "    Triangle " << i / 3 << ": Indices(" << indices[i] << ", "
+                      << indices[i + 1] << ", " << indices[i + 2] << ")" << std::endl;
+        }
+        if (indices.size() / 3 > maxTrianglesToShow) {
+            std::cout << "    ... (" << (indices.size() / 3) - maxTrianglesToShow
+                      << " more triangles)" << std::endl;
+        }
+
+        ++meshIndex;
     }
+
     return meshes;
 }
 
@@ -138,7 +179,7 @@ int main() {
 
         InputHandler::initialize(window, &scene);
 
-        std::string files = "Models/Cube/untitled.mtl.obj";
+        std::string files = "Models/Lego/lego obj.obj";
         try {
             auto meshes = loadMeshesFromObj(files);
             for (auto &mesh : meshes) {
@@ -148,12 +189,6 @@ int main() {
         } catch (const std::exception &e) {
             std::cerr << "Failed to load the model: " << e.what() << std::endl;
         }
-
-        // Load textures
-        auto texture1 = std::make_shared<Texture>("images/Untitled.png");
-        auto texture2 = std::make_shared<Texture>("images/Untitled2.jpg");
-        scene.addTexture(texture1);
-        scene.addTexture(texture2);
 
         // Disable VSync
         glfwSwapInterval(0);

@@ -111,4 +111,8 @@ const glm::mat4 &Mesh::getModelMatrix() const { return _modelMatrix; }
 
 void Mesh::setMaterial(const Material &material) { _material = material; }
 
+const std::vector<Vertex> &Mesh::getVertices() const { return _vertices; }
+
+const std::vector<unsigned int> &Mesh::getIndices() const { return _indices; }
+
 const Material &Mesh::getMaterial() const { return _material; }

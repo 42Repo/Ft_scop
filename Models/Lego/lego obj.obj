@@ -1,7 +1,7 @@
 # 3ds Max Wavefront OBJ Exporter v0.97b - (c)2007 guruware
 # File Created: 18.05.2017 18:47:43
 
-mtllib lego obj.mtl
+mtllib obj.mtl
 
 #
 # object Cylinder001

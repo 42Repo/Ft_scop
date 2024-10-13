@@ -19,19 +19,13 @@ class Shader {
     Shader(Shader &&other) noexcept;
     Shader &operator=(Shader &&other) noexcept;
 
-    // Add a shader stage from a file
     void addShaderFromFile(const std::string &filePath, GLenum shaderType);
-
-    // Add a shader stage from a string
     void addShaderFromSource(const std::string &sourceCode, GLenum shaderType);
 
-    // Link all added shaders into a shader program
     void link();
 
-    // Use/activate the shader program
     void use() const;
 
-    // Utility functions to set uniform variables in the shaders
     void setBool(const std::string &name, bool value) const;
     void setInt(const std::string &name, int value) const;
     void setFloat(const std::string &name, float value) const;
@@ -50,12 +44,10 @@ class Shader {
     void setMat4(const std::string &name, const glm::mat4 &mat) const;
 
   private:
-    unsigned int              ID;        // Shader program ID
-    std::vector<unsigned int> shaderIDs; // Store shader IDs for all shader stages
+    unsigned int              ID;
+    std::vector<unsigned int> shaderIDs;
 
-    // Utility function for checking shader compilation/linking errors
     void _checkCompileErrors(unsigned int shader, const std::string &type) const;
 
-    // Helper function to load shader source code from a file
     std::string _loadShaderSource(const std::string &filePath) const;
 };
