@@ -4,7 +4,6 @@
 #include "include/ObjLoader.h"
 #include "include/Scene.h"
 #include "include/Shader.h"
-#include "include/Texture.h"
 #include "include/struct.h"
 #include <glm/gtc/matrix_transform.hpp>
 #include <iostream>
@@ -179,7 +178,7 @@ int main() {
 
         InputHandler::initialize(window, &scene);
 
-        std::string files = "Models/Lego/lego obj.obj";
+        std::string files = "Models/BugattiV2/untitled.obj";
         try {
             auto meshes = loadMeshesFromObj(files);
             for (auto &mesh : meshes) {

@@ -217,9 +217,9 @@ void ObjLoader::_loadMaterialFile(const std::string &objFilePath,
 std::vector<std::shared_ptr<Mesh>> ObjLoader::getMeshes() const {
     std::vector<std::shared_ptr<Mesh>> meshes;
     for (const auto &object : _objects) {
-        const auto &vertices = object.vertices;
+        auto verticesPtr = std::make_shared<std::vector<Vertex>>(object.vertices);
         for (const auto &subMesh : object.subMeshes) {
-            std::shared_ptr<Mesh> mesh = std::make_shared<Mesh>(vertices, subMesh.indices);
+            std::shared_ptr<Mesh> mesh = std::make_shared<Mesh>(verticesPtr, subMesh.indices);
 
             auto it = _materials.find(subMesh.materialName);
             if (it != _materials.end()) {

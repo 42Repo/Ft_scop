@@ -4,7 +4,8 @@
 
 class Mesh {
   public:
-    Mesh(const std::vector<Vertex> &vertices, const std::vector<unsigned int> &indices);
+    Mesh(const std::shared_ptr<std::vector<Vertex>> &vertices,
+         const std::vector<unsigned int>            &indices);
 
     ~Mesh();
 
@@ -26,11 +27,11 @@ class Mesh {
     const Material                  &getMaterial() const;
 
   private:
-    std::vector<Vertex>       _vertices;
-    std::vector<unsigned int> _indices;
-    Material                  _material;
-    unsigned int              _VAO, _VBO, _EBO;
-    glm::mat4                 _modelMatrix;
+    std::shared_ptr<std::vector<Vertex>> _vertices;
+    std::vector<unsigned int>            _indices;
+    Material                             _material;
+    unsigned int                         _VAO, _VBO, _EBO;
+    glm::mat4                            _modelMatrix;
 
     void _setupMesh();
 };

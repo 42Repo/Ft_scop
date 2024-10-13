@@ -17,13 +17,13 @@ if(NOT CMAKE_BUILD_TYPE)
 endif()
 
 if(CMAKE_BUILD_TYPE STREQUAL "Debug")
-    set(CMAKE_CXX_FLAGS_DEBUG "-Wall -Werror -Wextra -gdwarf-4 -Wunused -Wconversion -Wfloat-equal -Wnon-virtual-dtor \
+    set(CMAKE_CXX_FLAGS_DEBUG "-Wall -Werror -Wextra -g -gdwarf-4 -Wunused -Wconversion -Wfloat-equal -Wnon-virtual-dtor \
         -Wpointer-arith -Wstrict-aliasing=2 -Wunreachable-code -Wnull-dereference \
         -Wnonnull -Wpedantic -Wcast-align -Wcast-qual -Wctor-dtor-privacy \
         -Wdisabled-optimization -Wformat=2 -Winit-self -Wmissing-declarations \
         -Wmissing-include-dirs -Wold-style-cast -Woverloaded-virtual \
         -Wredundant-decls -Wshadow -Wsign-conversion -Wsign-promo \
-        -Wstrict-overflow=5 -Wswitch-default -Wundef -o3")
+        -Wstrict-overflow=5 -Wswitch-default -Wundef")
     
     if(CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
         set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -Weverything -Wno-reserved-macro-identifier -Wno-reserved-identifier -Wno-c++98-compat -Wno-cast-function-type-strict -Wno-padded")

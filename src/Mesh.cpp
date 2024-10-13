@@ -1,14 +1,14 @@
 #include "../include/Mesh.h"
 #include "../include/glad/glad.h"
 
-Mesh::Mesh(const std::vector<Vertex> &vertices, const std::vector<unsigned int> &indices)
+Mesh::Mesh(const std::shared_ptr<std::vector<Vertex>> &vertices,
+           const std::vector<unsigned int>            &indices)
     : _vertices(vertices),
       _indices(indices),
       _VAO(0),
       _VBO(0),
       _EBO(0),
-      _modelMatrix(glm::mat4(1.0f)) // Initialize to identity matrix
-{
+      _modelMatrix(glm::mat4(1.0f)) {
     _setupMesh();
 }
 
@@ -68,9 +68,8 @@ void Mesh::_setupMesh() {
 
     // Load vertex data
     glBindBuffer(GL_ARRAY_BUFFER, _VBO);
-    glBufferData(GL_ARRAY_BUFFER, static_cast<GLsizeiptr>(_vertices.size() * sizeof(Vertex)),
-                 _vertices.data(), GL_STATIC_DRAW);
-
+    glBufferData(GL_ARRAY_BUFFER, static_cast<GLsizeiptr>(_vertices->size() * sizeof(Vertex)),
+                 _vertices->data(), GL_STATIC_DRAW);
     // Load index data
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, _EBO);
     glBufferData(GL_ELEMENT_ARRAY_BUFFER,
@@ -111,7 +110,7 @@ const glm::mat4 &Mesh::getModelMatrix() const { return _modelMatrix; }
 
 void Mesh::setMaterial(const Material &material) { _material = material; }
 
-const std::vector<Vertex> &Mesh::getVertices() const { return _vertices; }
+const std::vector<Vertex> &Mesh::getVertices() const { return *_vertices; }
 
 const std::vector<unsigned int> &Mesh::getIndices() const { return _indices; }
 
